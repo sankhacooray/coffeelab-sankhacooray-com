@@ -54,51 +54,52 @@
       var(--bg);
     min-height: 100vh;
   }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 18px 16px 80px; }
-  header { padding: 8px 4px 12px; }
-  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -.01em; }
-  h1 .bean { display: inline-block; width: 12px; height: 16px; background: var(--accent); border-radius: 50%/40%; margin-right: 8px; transform: translateY(2px); box-shadow: inset -2px 0 0 rgba(0,0,0,.3); }
-  .sub { color: var(--muted); font-size: 13px; }
+  .wrap { max-width: 1400px; margin: 0 auto; padding: 10px 18px 14px; }
+  header { padding: 2px 2px 8px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; }
+  h1 .bean { display: inline-block; width: 10px; height: 14px; background: var(--accent); border-radius: 50%/40%; margin-right: 6px; transform: translateY(2px); box-shadow: inset -2px 0 0 rgba(0,0,0,.3); }
+  .sub { color: var(--muted); font-size: 12px; }
 
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 12px 0; }
-  .card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0; }
+  .card h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
 
-  .layout { display: grid; grid-template-columns: 1fr 360px; gap: 16px; }
-  @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+  .layout { display: grid; grid-template-columns: 280px 1fr 300px; gap: 12px; align-items: start; }
+  @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
 
-  .families { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .families { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
   .fam-btn {
     cursor: pointer; border: 1px solid var(--line); background: var(--panel-2);
-    color: var(--muted); padding: 5px 10px; border-radius: 999px; font-size: 12px;
+    color: var(--muted); padding: 3px 8px; border-radius: 999px; font-size: 11px;
     transition: all .15s;
   }
   .fam-btn.active, .fam-btn:hover { color: var(--text); border-color: var(--accent); background: var(--panel); }
 
-  .drinks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .drinks { display: flex; flex-direction: column; gap: 3px; }
   .drink {
     cursor: pointer; border: 1px solid var(--line); background: var(--panel-2);
-    color: var(--text); padding: 10px 12px; border-radius: 10px; text-align: left;
+    color: var(--text); padding: 5px 9px; border-radius: 8px; text-align: left;
     transition: all .15s;
     font: inherit;
+    display: flex; align-items: baseline; gap: 8px; overflow: hidden;
   }
   .drink:hover { border-color: var(--accent); }
   .drink.active { border-color: var(--accent-2); background: var(--panel); box-shadow: 0 0 0 1px var(--accent-2); }
-  .drink .name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
-  .drink .ings { color: var(--muted); font-size: 11px; }
+  .drink .name { font-weight: 600; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
+  .drink .ings { color: var(--muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 
   /* Visualization area */
   .viz {
     display: flex; flex-direction: column; align-items: center;
-    padding: 24px 14px 18px;
+    padding: 8px 10px 10px;
   }
   .scene {
     position: relative;
-    width: 280px; height: 360px;
+    width: 260px; height: 300px;
     display: flex; justify-content: center; align-items: flex-end;
   }
   .saucer {
-    position: absolute; bottom: 4px;
-    width: 280px; height: 22px;
+    position: absolute; bottom: 2px;
+    width: 260px; height: 18px;
     background: radial-gradient(ellipse at center, var(--ceramic) 0%, var(--ceramic-shadow) 90%, transparent 100%);
     border-radius: 50%;
     box-shadow: 0 8px 18px rgba(0,0,0,.5);
@@ -106,9 +107,9 @@
   }
   .cup-wrap {
     position: relative;
-    width: 220px;
-    height: 280px;
-    margin-bottom: 14px;
+    width: 200px;
+    height: 240px;
+    margin-bottom: 10px;
     z-index: 1;
   }
   .cup {
@@ -190,16 +191,16 @@
 
   .cup-handle {
     position: absolute;
-    right: -34px; top: 70px;
-    width: 56px; height: 110px;
-    border: 14px solid var(--ceramic);
+    right: -30px; top: 60px;
+    width: 50px; height: 96px;
+    border: 12px solid var(--ceramic);
     border-left-color: transparent;
     border-radius: 0 60% 60% 0 / 0 50% 50% 0;
     box-shadow: 2px 2px 6px rgba(0,0,0,.3);
     z-index: 0;
   }
   .steam {
-    position: absolute; left: 50%; top: -30px; width: 60px; height: 60px;
+    position: absolute; left: 50%; top: -24px; width: 60px; height: 50px;
     transform: translateX(-50%);
     pointer-events: none;
     opacity: .5;
@@ -221,13 +222,14 @@
   }
 
   .match-banner {
-    margin-top: 14px;
-    padding: 10px 14px;
+    margin-top: 10px;
+    padding: 8px 12px;
+    width: 100%; max-width: 340px;
     background: linear-gradient(90deg, rgba(212,165,116,.18), rgba(201,122,60,.18));
     border: 1px solid var(--accent);
-    border-radius: 12px;
+    border-radius: 10px;
     text-align: center;
-    min-height: 44px;
+    min-height: 36px;
     display: flex; align-items: center; justify-content: center;
     transition: all .25s ease;
   }
@@ -237,39 +239,39 @@
     color: var(--muted);
   }
   .match-banner .made {
-    font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-right: 8px;
+    font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-right: 6px;
   }
   .match-banner .drink-name {
-    font-size: 18px; font-weight: 700; color: var(--accent);
+    font-size: 16px; font-weight: 700; color: var(--accent);
   }
-  .match-banner .hint { font-size: 13px; }
+  .match-banner .hint { font-size: 12px; }
 
   /* Ingredient controls */
-  .ings-list { display: flex; flex-direction: column; gap: 6px; }
+  .ings-list { display: flex; flex-direction: column; gap: 3px; }
   .ing-row {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 8px 10px;
+    padding: 4px 8px;
     background: var(--panel-2); border: 1px solid var(--line);
-    border-radius: 10px;
+    border-radius: 8px;
   }
   .ing-row.has {
     border-color: var(--accent);
   }
-  .ing-meta { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .ing-meta { display: flex; align-items: center; gap: 8px; min-width: 0; }
   .swatch {
-    width: 18px; height: 18px; border-radius: 50%;
+    width: 14px; height: 14px; border-radius: 50%;
     border: 1px solid rgba(0,0,0,.3);
     flex-shrink: 0;
   }
-  .ing-name { font-size: 13px; }
-  .ing-name .ing-sub { display: block; font-size: 11px; color: var(--muted); }
-  .ing-controls { display: flex; align-items: center; gap: 6px; }
+  .ing-name { font-size: 12px; line-height: 1.2; }
+  .ing-name .ing-sub { display: none; }
+  .ing-controls { display: flex; align-items: center; gap: 4px; }
   .btn {
     cursor: pointer; user-select: none;
     background: var(--panel); color: var(--text);
-    border: 1px solid var(--line); border-radius: 8px;
-    width: 28px; height: 28px;
-    font-size: 16px; line-height: 1;
+    border: 1px solid var(--line); border-radius: 6px;
+    width: 22px; height: 22px;
+    font-size: 14px; line-height: 1;
     display: inline-flex; align-items: center; justify-content: center;
     transition: all .12s;
   }
@@ -278,24 +280,24 @@
   .btn.plus { color: var(--accent); }
   .btn.minus { color: var(--muted); }
   .ing-amount {
-    min-width: 32px; text-align: center; font-variant-numeric: tabular-nums;
-    color: var(--text); font-weight: 600;
+    min-width: 22px; text-align: center; font-variant-numeric: tabular-nums;
+    color: var(--text); font-weight: 600; font-size: 12px;
   }
   .ing-amount.zero { color: var(--muted); font-weight: 400; }
 
-  .actions { display: flex; gap: 8px; margin-top: 10px; }
+  .actions { display: flex; gap: 6px; margin-top: 8px; }
   .action-btn {
     flex: 1; cursor: pointer;
-    padding: 9px 12px;
+    padding: 6px 10px;
     background: var(--panel-2);
     color: var(--text);
-    border: 1px solid var(--line); border-radius: 10px;
-    font: inherit; font-size: 13px;
+    border: 1px solid var(--line); border-radius: 8px;
+    font: inherit; font-size: 12px;
     transition: all .12s;
   }
   .action-btn:hover { border-color: var(--accent); }
 
-  footer { margin-top: 30px; padding: 8px 4px; color: var(--muted); font-size: 12px; text-align: center; }
+  footer { margin-top: 12px; padding: 4px 4px; color: var(--muted); font-size: 11px; text-align: center; }
   footer a { color: var(--accent); }
 </style>
 </head>
@@ -303,34 +305,32 @@
 <div class="wrap">
   <header>
     <h1><span class="bean"></span>Coffee Lab</h1>
-    <div class="sub">Pick a coffee, or build one from scratch — add and remove ingredients and watch which famous drink you just made.</div>
+    <div class="sub">Pick a coffee, or build one — add and remove ingredients and watch which famous drink you just made.</div>
   </header>
 
   <div class="layout">
-    <div>
-      <div class="card">
-        <h2>Famous coffees</h2>
-        <div class="families" id="families"></div>
-        <div class="drinks" id="drinks"></div>
-      </div>
+    <div class="card">
+      <h2>Famous coffees</h2>
+      <div class="families" id="families"></div>
+      <div class="drinks" id="drinks"></div>
+    </div>
 
-      <div class="card viz">
-        <div class="scene">
-          <div class="cup-wrap">
-            <div class="steam" id="steam">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="cup-handle"></div>
-            <div class="cup">
-              <div class="cup-rim"></div>
-              <div class="liquid" id="liquid"></div>
-            </div>
+    <div class="card viz">
+      <div class="scene">
+        <div class="cup-wrap">
+          <div class="steam" id="steam">
+            <span></span><span></span><span></span>
           </div>
-          <div class="saucer"></div>
+          <div class="cup-handle"></div>
+          <div class="cup">
+            <div class="cup-rim"></div>
+            <div class="liquid" id="liquid"></div>
+          </div>
         </div>
-        <div class="match-banner empty" id="matchBanner">
-          <span class="hint">Add ingredients to start brewing</span>
-        </div>
+        <div class="saucer"></div>
+      </div>
+      <div class="match-banner empty" id="matchBanner">
+        <span class="hint">Add ingredients to start brewing</span>
       </div>
     </div>
 
@@ -344,7 +344,7 @@
   </div>
 
   <footer>
-    Open source &middot; <a href="https://github.com/sankhacooray/coffeelab-sankhacooray-com">github.com/sankhacooray/coffeelab-sankhacooray-com</a>
+    <a href="https://github.com/sankhacooray/coffeelab-sankhacooray-com">github.com/sankhacooray/coffeelab-sankhacooray-com</a>
   </footer>
 </div>
 
