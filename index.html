@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#3a1f10">
 <title>Coffee Lab — Build your espresso drink</title>
 
-<meta name="description" content="A small visual lab for building coffee drinks. Add and remove ingredients in a virtual cup and watch which famous coffee you accidentally just made.">
+<meta name="description" content="A small visual lab for building coffee drinks. Add a base, milk, sweetener and toppings to a virtual cup and watch which famous coffee you just made.">
 <link rel="canonical" href="https://coffeelab.sankhacooray.com/">
 
 <meta property="og:title" content="Coffee Lab">
@@ -63,7 +63,7 @@
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0; }
   .card h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
 
-  .layout { display: grid; grid-template-columns: 280px 1fr 300px; gap: 12px; align-items: start; }
+  .layout { display: grid; grid-template-columns: 240px 280px 1fr; gap: 12px; align-items: stretch; }
   @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
 
   .families { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
@@ -87,7 +87,7 @@
   .drink .name { font-weight: 600; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
   .drink .ings { color: var(--muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 
-  /* Visualization area */
+  /* Center column: cup viz + notes below */
   .viz {
     display: flex; flex-direction: column; align-items: center;
     padding: 8px 10px 10px;
@@ -188,7 +188,6 @@
     background: linear-gradient(to bottom, rgba(255,255,255,.4), rgba(255,255,255,.1));
     box-shadow: inset 0 -2px 0 rgba(255,255,255,.6);
   }
-
   .cup-handle {
     position: absolute;
     right: -30px; top: 60px;
@@ -224,7 +223,7 @@
   .match-banner {
     margin-top: 10px;
     padding: 8px 12px;
-    width: 100%; max-width: 340px;
+    width: 100%;
     background: linear-gradient(90deg, rgba(212,165,116,.18), rgba(201,122,60,.18));
     border: 1px solid var(--accent);
     border-radius: 10px;
@@ -246,7 +245,80 @@
   }
   .match-banner .hint { font-size: 12px; }
 
-  /* Ingredient controls */
+  /* Notes panel below the cup */
+  .notes {
+    margin-top: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.55;
+    flex-grow: 1;
+  }
+  .notes .note-title {
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 4px;
+  }
+  .notes .note-body { color: var(--text); font-size: 13px; line-height: 1.5; }
+  .notes .recipe-table { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
+  .notes .recipe-row { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
+  .notes .recipe-row .ing { color: var(--text); }
+  .notes .recipe-row .amt { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .notes .closest-row { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-top: 2px; }
+  .notes .closest-pill {
+    display: inline-flex; align-items: center; gap: 4px;
+    background: var(--panel); border: 1px solid var(--line);
+    padding: 2px 8px; border-radius: 999px; color: var(--text);
+    font-size: 11px;
+  }
+  .notes .closest-pill .delta { color: var(--accent); font-weight: 600; }
+
+  /* Stages — the build column */
+  .stages-card { display: flex; flex-direction: column; }
+  .stages-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    margin-bottom: 6px;
+  }
+  .stages-head h2 { margin: 0; }
+  .stages-head .clear-link {
+    cursor: pointer; background: transparent; border: 0;
+    color: var(--muted); font-size: 11px; padding: 2px 4px;
+    text-decoration: underline; text-decoration-color: var(--line);
+    font: inherit; font-size: 11px;
+  }
+  .stages-head .clear-link:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+  .stages-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 14px;
+    align-content: start;
+  }
+  .stage { display: flex; flex-direction: column; gap: 4px; }
+  .stage-head {
+    display: flex; align-items: baseline; gap: 6px; padding-bottom: 4px;
+    border-bottom: 1px dashed var(--line);
+    margin-bottom: 4px;
+  }
+  .stage-head .stage-num {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: var(--panel-2);
+    border: 1px solid var(--line);
+    color: var(--accent);
+    font-size: 10px; font-weight: 700;
+    display: inline-flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .stage-head h3 { margin: 0; font-size: 12px; font-weight: 600; color: var(--text); }
+  .stage-head .stage-hint { font-size: 10px; color: var(--muted); margin-left: auto; }
+
   .ings-list { display: flex; flex-direction: column; gap: 3px; }
   .ing-row {
     display: flex; align-items: center; justify-content: space-between;
@@ -254,18 +326,11 @@
     background: var(--panel-2); border: 1px solid var(--line);
     border-radius: 8px;
   }
-  .ing-row.has {
-    border-color: var(--accent);
-  }
-  .ing-meta { display: flex; align-items: center; gap: 8px; min-width: 0; }
-  .swatch {
-    width: 14px; height: 14px; border-radius: 50%;
-    border: 1px solid rgba(0,0,0,.3);
-    flex-shrink: 0;
-  }
-  .ing-name { font-size: 12px; line-height: 1.2; }
-  .ing-name .ing-sub { display: none; }
-  .ing-controls { display: flex; align-items: center; gap: 4px; }
+  .ing-row.has { border-color: var(--accent); }
+  .ing-meta { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
+  .swatch { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); flex-shrink: 0; }
+  .ing-name { font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ing-controls { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
   .btn {
     cursor: pointer; user-select: none;
     background: var(--panel); color: var(--text);
@@ -280,24 +345,12 @@
   .btn.plus { color: var(--accent); }
   .btn.minus { color: var(--muted); }
   .ing-amount {
-    min-width: 22px; text-align: center; font-variant-numeric: tabular-nums;
+    min-width: 18px; text-align: center; font-variant-numeric: tabular-nums;
     color: var(--text); font-weight: 600; font-size: 12px;
   }
   .ing-amount.zero { color: var(--muted); font-weight: 400; }
 
-  .actions { display: flex; gap: 6px; margin-top: 8px; }
-  .action-btn {
-    flex: 1; cursor: pointer;
-    padding: 6px 10px;
-    background: var(--panel-2);
-    color: var(--text);
-    border: 1px solid var(--line); border-radius: 8px;
-    font: inherit; font-size: 12px;
-    transition: all .12s;
-  }
-  .action-btn:hover { border-color: var(--accent); }
-
-  footer { margin-top: 12px; padding: 4px 4px; color: var(--muted); font-size: 11px; text-align: center; }
+  footer { margin-top: 10px; padding: 4px 4px; color: var(--muted); font-size: 11px; text-align: center; }
   footer a { color: var(--accent); }
 </style>
 </head>
@@ -305,7 +358,7 @@
 <div class="wrap">
   <header>
     <h1><span class="bean"></span>Coffee Lab</h1>
-    <div class="sub">Pick a coffee, or build one — add and remove ingredients and watch which famous drink you just made.</div>
+    <div class="sub">Pick a coffee, or build one — base, milk, sweetener, toppings — and watch which famous drink you just made.</div>
   </header>
 
   <div class="layout">
@@ -332,14 +385,15 @@
       <div class="match-banner empty" id="matchBanner">
         <span class="hint">Add ingredients to start brewing</span>
       </div>
+      <div class="notes" id="notes"></div>
     </div>
 
-    <div class="card">
-      <h2>Ingredients</h2>
-      <div class="ings-list" id="ingsList"></div>
-      <div class="actions">
-        <button class="action-btn" id="clearBtn">Empty the cup</button>
+    <div class="card stages-card">
+      <div class="stages-head">
+        <h2>Build your drink</h2>
+        <button class="clear-link" id="clearBtn">empty the cup</button>
       </div>
+      <div class="stages-grid" id="stages"></div>
     </div>
   </div>
 
@@ -350,78 +404,139 @@
 
 <script>
 /* ============================================================
-   INGREDIENTS  — color, density rank, optional layer class
-   density: lower = sinks (bottom of cup), higher = floats (top)
+   INGREDIENTS — color, density (lower = sinks), stage, optional texture klass
    ============================================================ */
 const INGREDIENTS = {
-  chocolate:     { name: "Chocolate syrup",  sub: "rich cocoa syrup",       color: "#1e0e08", density: 1 },
-  sugar:         { name: "Sugar",            sub: "fine sugar",             color: "#ece2c8", density: 2, klass: "sugar" },
-  espresso:      { name: "Espresso shot",    sub: "30 ml pulled shot",      color: "#2f1a0d", density: 3 },
-  ristretto:     { name: "Ristretto shot",   sub: "short, concentrated",    color: "#1f0e07", density: 3 },
-  cold_brew:     { name: "Cold brew",        sub: "slow-steeped cold",      color: "#2d1812", density: 3 },
-  hot_water:     { name: "Hot water",        sub: "for dilution",           color: "#8a5a38", density: 4 },
-  cold_water:    { name: "Cold water",       sub: "for icing down",         color: "#aac2d0", density: 4 },
-  whisky:        { name: "Irish whiskey",    sub: "a measure",              color: "#b8651b", density: 5 },
-  steamed_milk:  { name: "Steamed milk",     sub: "textured warm milk",     color: "#f3e6cf", density: 6 },
-  cold_milk:     { name: "Cold milk",        sub: "fresh cold milk",        color: "#fbf6ec", density: 6 },
-  ice_cream:     { name: "Vanilla ice cream",sub: "one scoop",              color: "#fff5c8", density: 7, klass: "icecream" },
-  ice:           { name: "Ice cubes",        sub: "crushed or cubed",       color: "#d6e7f2", density: 8, klass: "ice" },
-  milk_foam:     { name: "Milk foam",        sub: "microfoam, airy",        color: "#fffaf0", density: 9, klass: "foam" },
-  whipped_cream: { name: "Whipped cream",    sub: "soft peaks",             color: "#fffefb", density: 10, klass: "whipped" },
-  cocoa:         { name: "Cocoa dusting",    sub: "fine powder on top",     color: "#4a2c1a", density: 11, klass: "cocoa" },
+  espresso:           { name: "Espresso shot",     stage: "base",      color: "#2f1a0d", density: 3 },
+  ristretto:          { name: "Ristretto",         stage: "base",      color: "#1f0e07", density: 3 },
+  cold_brew:          { name: "Cold brew",         stage: "base",      color: "#2d1812", density: 3 },
+
+  hot_water:          { name: "Hot water",         stage: "water",     color: "#8a5a38", density: 4 },
+  cold_water:         { name: "Cold water",        stage: "water",     color: "#aac2d0", density: 4 },
+  ice:                { name: "Ice",               stage: "water",     color: "#d6e7f2", density: 8, klass: "ice" },
+
+  steamed_milk:       { name: "Steamed milk",      stage: "milk",      color: "#f3e6cf", density: 6 },
+  cold_milk:          { name: "Cold milk",         stage: "milk",      color: "#fbf6ec", density: 6 },
+  oat_milk:           { name: "Oat milk",          stage: "milk",      color: "#ecdeba", density: 6 },
+  almond_milk:        { name: "Almond milk",       stage: "milk",      color: "#e8d8b8", density: 6 },
+  soy_milk:           { name: "Soy milk",          stage: "milk",      color: "#f4e8c8", density: 6 },
+  pistachio_oat_milk: { name: "Pistachio oat",     stage: "milk",      color: "#cfd9a6", density: 6 },
+
+  sugar:              { name: "Sugar",             stage: "sweetener", color: "#ece2c8", density: 2, klass: "sugar" },
+  chocolate:          { name: "Chocolate syrup",   stage: "sweetener", color: "#1e0e08", density: 1 },
+  vanilla_syrup:      { name: "Vanilla syrup",     stage: "sweetener", color: "#d9b573", density: 1 },
+  caramel_syrup:      { name: "Caramel syrup",     stage: "sweetener", color: "#8a4f1e", density: 1 },
+
+  whisky:             { name: "Irish whiskey",     stage: "spirit",    color: "#b8651b", density: 5 },
+
+  milk_foam:          { name: "Milk foam",         stage: "foam",      color: "#fffaf0", density: 9, klass: "foam" },
+  whipped_cream:      { name: "Whipped cream",     stage: "foam",      color: "#fffefb", density: 10, klass: "whipped" },
+  ice_cream:          { name: "Vanilla ice cream", stage: "foam",      color: "#fff5c8", density: 7, klass: "icecream" },
+
+  cocoa:              { name: "Cocoa dusting",     stage: "dust",      color: "#4a2c1a", density: 11, klass: "cocoa" },
 };
 
 /* ============================================================
-   FAMOUS COFFEES
-   Each recipe is { ingredientId: parts } — parts == 30 ml unit.
-   `family` groups them in the UI.
+   STAGES — the order you build a coffee
+   ============================================================ */
+const STAGES = [
+  { id: "base",      title: "Base",         hint: "the coffee itself" },
+  { id: "water",     title: "Water & ice",  hint: "dilute or chill" },
+  { id: "milk",      title: "Milk",         hint: "dairy or plant" },
+  { id: "sweetener", title: "Sweetener",    hint: "sugar or syrup" },
+  { id: "spirit",    title: "Spirit",       hint: "a measure" },
+  { id: "foam",      title: "Foam & top",   hint: "the finish" },
+  { id: "dust",      title: "Dust",         hint: "garnish" },
+];
+
+/* ============================================================
+   FAMOUS COFFEES — recipe is { ingredientId: parts }, 1 part ≈ 30 ml
    ============================================================ */
 const COFFEES = [
-  { id: "espresso",     name: "Espresso",        family: "Pure espresso",   recipe: { espresso: 1 } },
-  { id: "doppio",       name: "Doppio",          family: "Pure espresso",   recipe: { espresso: 2 } },
-  { id: "ristretto",    name: "Ristretto",       family: "Pure espresso",   recipe: { ristretto: 1 } },
+  { id: "espresso",     name: "Espresso",        family: "Pure espresso",   recipe: { espresso: 1 },                                                      notes: "A single 30 ml shot pulled in 25–30 s. The foundation of every Italian café drink." },
+  { id: "doppio",       name: "Doppio",          family: "Pure espresso",   recipe: { espresso: 2 },                                                      notes: "Two espresso shots in one cup. \"Double\" in Italian." },
+  { id: "ristretto",    name: "Ristretto",       family: "Pure espresso",   recipe: { ristretto: 1 },                                                     notes: "A \"restricted\" pull — same ground coffee, less water. More syrupy and less bitter than a normal shot." },
 
-  { id: "americano",    name: "Americano",       family: "With water",      recipe: { espresso: 1, hot_water: 3 } },
-  { id: "long_black",   name: "Long Black",      family: "With water",      recipe: { espresso: 2, hot_water: 2 } },
+  { id: "americano",    name: "Americano",       family: "With water",      recipe: { espresso: 1, hot_water: 3 },                                        notes: "Espresso lengthened with hot water. Folklore says US soldiers in WWII asked Italian baristas to dilute their espresso." },
+  { id: "long_black",   name: "Long Black",      family: "With water",      recipe: { espresso: 2, hot_water: 2 },                                        notes: "Antipodean reverse of an Americano — hot water first, then the shots poured on top. Keeps the crema intact." },
 
-  { id: "macchiato",    name: "Macchiato",       family: "Milk-forward",    recipe: { espresso: 1, milk_foam: 1 } },
-  { id: "cortado",      name: "Cortado",         family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 1 } },
-  { id: "flat_white",   name: "Flat White",      family: "Milk-forward",    recipe: { espresso: 2, steamed_milk: 4 } },
-  { id: "cappuccino",   name: "Cappuccino",      family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 2, milk_foam: 2 } },
-  { id: "latte",        name: "Latte",           family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 5, milk_foam: 1 } },
+  { id: "macchiato",    name: "Macchiato",       family: "Milk-forward",    recipe: { espresso: 1, milk_foam: 1 },                                        notes: "Espresso \"marked\" (macchiato) with just a dollop of milk foam." },
+  { id: "cortado",      name: "Cortado",         family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 1 },                                     notes: "Equal parts espresso and steamed milk. Spanish for \"cut\"." },
+  { id: "flat_white",   name: "Flat White",      family: "Milk-forward",    recipe: { espresso: 2, steamed_milk: 4 },                                     notes: "Antipodean specialty: double espresso under velvety microfoam, no thick foam cap." },
+  { id: "cappuccino",   name: "Cappuccino",      family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 2, milk_foam: 2 },                       notes: "Equal thirds of espresso, steamed milk, and milk foam. Named after the brown hood of Capuchin monks." },
+  { id: "latte",        name: "Latte",           family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 5, milk_foam: 1 },                       notes: "Mostly steamed milk over an espresso, with a thin foam cap." },
 
-  { id: "mocha",        name: "Café Mocha",      family: "Sweet & rich",    recipe: { chocolate: 1, espresso: 1, steamed_milk: 4, whipped_cream: 1 } },
-  { id: "vienna",       name: "Vienna",          family: "Sweet & rich",    recipe: { espresso: 2, whipped_cream: 2, cocoa: 1 } },
-  { id: "cubano",       name: "Café Cubano",     family: "Sweet & rich",    recipe: { sugar: 1, espresso: 1 } },
+  { id: "mocha",        name: "Café Mocha",      family: "Sweet & rich",    recipe: { chocolate: 1, espresso: 1, steamed_milk: 4, whipped_cream: 1 },     notes: "Espresso with chocolate syrup and steamed milk, often crowned with whipped cream." },
+  { id: "vienna",       name: "Vienna",          family: "Sweet & rich",    recipe: { espresso: 2, whipped_cream: 2, cocoa: 1 },                          notes: "Two shots topped with mountains of whipped cream and a dusting of cocoa. The Wiener Melange's richer cousin." },
+  { id: "cubano",       name: "Café Cubano",     family: "Sweet & rich",    recipe: { sugar: 1, espresso: 1 },                                            notes: "Espresso pulled directly onto sugar and whipped into an \"espuma\". Fiercely sweet." },
+  { id: "vanilla_latte",name: "Vanilla Latte",   family: "Sweet & rich",    recipe: { vanilla_syrup: 1, espresso: 1, steamed_milk: 5, milk_foam: 1 },     notes: "Latte sweetened with vanilla syrup." },
+  { id: "caramel_macc", name: "Caramel Macchiato",family:"Sweet & rich",    recipe: { vanilla_syrup: 1, steamed_milk: 4, espresso: 1, caramel_syrup: 1, milk_foam: 1 }, notes: "Vanilla-sweetened milk, espresso \"marked\" on top, then a caramel drizzle. A Starbucks classic." },
 
-  { id: "affogato",     name: "Affogato",        family: "With ice cream",  recipe: { espresso: 2, ice_cream: 2 } },
+  { id: "oat_latte",    name: "Oat Latte",       family: "Alt milk",        recipe: { espresso: 1, oat_milk: 5, milk_foam: 1 },                           notes: "Latte made with oat milk. The default plant-milk in third-wave cafés — steams to a silky microfoam." },
+  { id: "almond_latte", name: "Almond Latte",    family: "Alt milk",        recipe: { espresso: 1, almond_milk: 5, milk_foam: 1 },                       notes: "Latte made with almond milk. Nutty, slightly thinner texture than oat." },
+  { id: "soy_latte",    name: "Soy Latte",       family: "Alt milk",        recipe: { espresso: 1, soy_milk: 5, milk_foam: 1 },                           notes: "Latte with soy milk — the original specialty alt-milk." },
+  { id: "pistachio_latte",name:"Pistachio Latte",family: "Alt milk",        recipe: { espresso: 1, pistachio_oat_milk: 5, milk_foam: 1 },                 notes: "Latte with sweet pistachio-oat milk. A 2020s flavor-bar staple." },
 
-  { id: "iced_latte",   name: "Iced Latte",      family: "Iced",            recipe: { espresso: 1, cold_milk: 4, ice: 3 } },
-  { id: "iced_americano", name: "Iced Americano",family: "Iced",            recipe: { espresso: 1, cold_water: 3, ice: 3 } },
-  { id: "cold_brew",    name: "Cold Brew",       family: "Iced",            recipe: { cold_brew: 4 } },
+  { id: "affogato",     name: "Affogato",        family: "With ice cream",  recipe: { espresso: 2, ice_cream: 2 },                                        notes: "A scoop of vanilla ice cream \"drowned\" (affogato) in hot espresso. Dessert and coffee in one cup." },
 
-  { id: "irish",        name: "Irish Coffee",    family: "Spirited",        recipe: { espresso: 2, whisky: 1, sugar: 1, whipped_cream: 2 } },
+  { id: "iced_latte",   name: "Iced Latte",      family: "Iced",            recipe: { espresso: 1, cold_milk: 4, ice: 3 },                                notes: "Espresso poured over cold milk and ice." },
+  { id: "iced_americano",name:"Iced Americano",  family: "Iced",            recipe: { espresso: 1, cold_water: 3, ice: 3 },                               notes: "Espresso over cold water and ice. Brisk and clean." },
+  { id: "cold_brew",    name: "Cold Brew",       family: "Iced",            recipe: { cold_brew: 4 },                                                     notes: "Coffee steeped in cold water for 12–24 hours. Mellow, low-acid, no espresso machine needed." },
+
+  { id: "irish",        name: "Irish Coffee",    family: "Spirited",        recipe: { espresso: 2, whisky: 1, sugar: 1, whipped_cream: 2 },               notes: "Hot coffee with Irish whiskey, sweetened, with a layer of cream floated on top. Invented at Foynes Airport, Ireland in 1943." },
 ];
 
 /* ============================================================
    STATE
    ============================================================ */
 const state = {
-  cup: {},                  // { ingredientId: parts }
+  cup: {},
   activeFamily: "All",
-  hoveredDrink: null,
 };
 
-const CAPACITY = 10;        // parts that visually fill the cup
+const CAPACITY = 10;
 
 /* ============================================================
-   RENDERING
+   HELPERS
    ============================================================ */
-function ingredientShortLabel(parts, id) {
-  const n = INGREDIENTS[id].name.split(" ")[0].toLowerCase();
-  return `${parts}× ${n}`;
+function shortIngLabel(id) {
+  return INGREDIENTS[id].name.split(" ")[0].toLowerCase();
+}
+function recipeInline(recipe) {
+  return Object.entries(recipe).map(([id, n]) => `${n}× ${shortIngLabel(id)}`).join(" + ");
+}
+function totalParts() {
+  return Object.values(state.cup).reduce((s, n) => s + n, 0);
 }
 
+function findMatch() {
+  const cupIds = Object.keys(state.cup).filter(k => state.cup[k] > 0);
+  if (cupIds.length === 0) return null;
+  for (const c of COFFEES) {
+    const recipeIds = Object.keys(c.recipe);
+    if (recipeIds.length !== cupIds.length) continue;
+    let match = true;
+    for (const id of recipeIds) {
+      if (state.cup[id] !== c.recipe[id]) { match = false; break; }
+    }
+    if (match) return c;
+  }
+  return null;
+}
+
+function closestDrinks(n = 3) {
+  const ranked = COFFEES.map(c => {
+    const allKeys = new Set([...Object.keys(c.recipe), ...Object.keys(state.cup)]);
+    let dist = 0;
+    for (const k of allKeys) dist += Math.abs((c.recipe[k] || 0) - (state.cup[k] || 0));
+    return { c, dist };
+  }).sort((a, b) => a.dist - b.dist);
+  return ranked.slice(0, n);
+}
+
+/* ============================================================
+   RENDER — families + drinks
+   ============================================================ */
 function renderFamilies() {
   const families = ["All", ...Array.from(new Set(COFFEES.map(c => c.family)))];
   const root = document.getElementById("families");
@@ -445,36 +560,51 @@ function renderDrinks() {
   for (const c of list) {
     const b = document.createElement("button");
     b.className = "drink" + (currentMatch && currentMatch.id === c.id ? " active" : "");
-    const parts = Object.entries(c.recipe).map(([id, n]) => ingredientShortLabel(n, id)).join(" + ");
-    b.innerHTML = `<div class="name">${c.name}</div><div class="ings">${parts}</div>`;
+    b.innerHTML = `<div class="name">${c.name}</div><div class="ings">${recipeInline(c.recipe)}</div>`;
     b.onclick = () => { state.cup = { ...c.recipe }; render(); };
     root.appendChild(b);
   }
 }
 
-function renderIngsList() {
-  const root = document.getElementById("ingsList");
+/* ============================================================
+   RENDER — stages (build your drink)
+   ============================================================ */
+function renderStages() {
+  const root = document.getElementById("stages");
   root.innerHTML = "";
-  // Order ingredients by density so the panel mirrors stacking order
-  const order = Object.keys(INGREDIENTS).sort((a, b) => INGREDIENTS[a].density - INGREDIENTS[b].density);
-  for (const id of order) {
-    const ing = INGREDIENTS[id];
-    const parts = state.cup[id] || 0;
-    const row = document.createElement("div");
-    row.className = "ing-row" + (parts > 0 ? " has" : "");
-    row.innerHTML = `
-      <div class="ing-meta">
-        <div class="swatch" style="background:${ing.color}"></div>
-        <div class="ing-name">${ing.name}<span class="ing-sub">${ing.sub}</span></div>
+  STAGES.forEach((stage, idx) => {
+    const ingIds = Object.keys(INGREDIENTS).filter(id => INGREDIENTS[id].stage === stage.id);
+    if (ingIds.length === 0) return;
+    const sec = document.createElement("section");
+    sec.className = "stage";
+    sec.innerHTML = `
+      <div class="stage-head">
+        <span class="stage-num">${idx + 1}</span>
+        <h3>${stage.title}</h3>
+        <span class="stage-hint">${stage.hint}</span>
       </div>
-      <div class="ing-controls">
-        <button class="btn minus" data-id="${id}" data-delta="-1">−</button>
-        <div class="ing-amount${parts === 0 ? " zero" : ""}">${parts}</div>
-        <button class="btn plus"  data-id="${id}" data-delta="1">+</button>
+      <div class="ings-list">
+        ${ingIds.map(id => {
+          const ing = INGREDIENTS[id];
+          const parts = state.cup[id] || 0;
+          return `
+            <div class="ing-row${parts > 0 ? " has" : ""}">
+              <div class="ing-meta">
+                <div class="swatch" style="background:${ing.color}"></div>
+                <div class="ing-name">${ing.name}</div>
+              </div>
+              <div class="ing-controls">
+                <button class="btn minus" data-id="${id}" data-delta="-1">−</button>
+                <div class="ing-amount${parts === 0 ? " zero" : ""}">${parts}</div>
+                <button class="btn plus" data-id="${id}" data-delta="1">+</button>
+              </div>
+            </div>
+          `;
+        }).join("")}
       </div>
     `;
-    root.appendChild(row);
-  }
+    root.appendChild(sec);
+  });
   root.onclick = (e) => {
     const btn = e.target.closest("button[data-id]");
     if (!btn) return;
@@ -487,6 +617,9 @@ function renderIngsList() {
   };
 }
 
+/* ============================================================
+   RENDER — liquid (the cup contents)
+   ============================================================ */
 function renderLiquid() {
   const liquid = document.getElementById("liquid");
   liquid.innerHTML = "";
@@ -497,7 +630,6 @@ function renderLiquid() {
     document.getElementById("steam").style.opacity = "0";
     return;
   }
-  // Sort density ascending so densest is rendered first (and flex column-reverse puts it on bottom)
   entries.sort((a, b) => INGREDIENTS[a[0]].density - INGREDIENTS[b[0]].density);
 
   const fillFraction = Math.min(total / CAPACITY, 1);
@@ -512,58 +644,76 @@ function renderLiquid() {
     liquid.appendChild(layer);
   }
 
-  // Steam if it's a hot drink (has steamed_milk / espresso / hot_water and NO ice / cold_milk / cold_water / cold_brew)
   const hasHot = ["espresso","ristretto","steamed_milk","hot_water","whisky"].some(k => state.cup[k]);
   const hasCold = ["ice","cold_milk","cold_water","cold_brew"].some(k => state.cup[k]);
   document.getElementById("steam").style.opacity = (hasHot && !hasCold) ? ".5" : "0";
 }
 
-function findMatch() {
-  const cupIds = Object.keys(state.cup).filter(k => state.cup[k] > 0);
-  if (cupIds.length === 0) return null;
-  for (const c of COFFEES) {
-    const recipeIds = Object.keys(c.recipe);
-    if (recipeIds.length !== cupIds.length) continue;
-    let match = true;
-    for (const id of recipeIds) {
-      if (state.cup[id] !== c.recipe[id]) { match = false; break; }
-    }
-    if (match) return c;
-  }
-  return null;
-}
-
+/* ============================================================
+   RENDER — match banner + notes panel
+   ============================================================ */
 function renderBanner() {
   const banner = document.getElementById("matchBanner");
-  const total = Object.values(state.cup).reduce((s, n) => s + n, 0);
   const match = findMatch();
+  const total = totalParts();
   if (match) {
     banner.className = "match-banner";
     banner.innerHTML = `<span class="made">You just made</span><span class="drink-name">${match.name}</span>`;
+  } else if (total === 0) {
+    banner.className = "match-banner empty";
+    banner.innerHTML = `<span class="hint">Add ingredients to start brewing</span>`;
+  } else {
+    const closest = closestDrinks(1)[0];
+    banner.className = "match-banner empty";
+    banner.innerHTML = `<span class="hint">In progress — ${closest.dist} step${closest.dist === 1 ? "" : "s"} from a ${closest.c.name}</span>`;
+  }
+}
+
+function renderNotes() {
+  const root = document.getElementById("notes");
+  const match = findMatch();
+  const total = totalParts();
+  if (match) {
+    const recipeRows = Object.entries(match.recipe).map(([id, parts]) =>
+      `<div class="recipe-row"><span class="ing">${INGREDIENTS[id].name}</span><span class="amt">${parts}× &middot; ${parts * 30} ml</span></div>`
+    ).join("");
+    root.innerHTML = `
+      <div class="note-title">${match.family}</div>
+      <div class="note-body">${match.notes}</div>
+      <div class="recipe-table">${recipeRows}</div>
+    `;
     return;
   }
   if (total === 0) {
-    banner.className = "match-banner empty";
-    banner.innerHTML = `<span class="hint">Add ingredients to start brewing</span>`;
+    root.innerHTML = `
+      <div class="note-title">How to use</div>
+      <div class="note-body">Pick a famous coffee on the left, or build one yourself by stepping through <strong>Base → Milk → Sweetener → Toppings</strong> on the right. The cup pours itself as you go.</div>
+    `;
     return;
   }
-  // Closest hint — count how far we are from each drink
-  let bestDrink = null, bestDist = Infinity;
-  for (const c of COFFEES) {
-    const allKeys = new Set([...Object.keys(c.recipe), ...Object.keys(state.cup)]);
-    let dist = 0;
-    for (const k of allKeys) dist += Math.abs((c.recipe[k] || 0) - (state.cup[k] || 0));
-    if (dist < bestDist) { bestDist = dist; bestDrink = c; }
-  }
-  banner.className = "match-banner empty";
-  banner.innerHTML = `<span class="hint">In progress — ${bestDist} step${bestDist === 1 ? "" : "s"} from a ${bestDrink.name}</span>`;
+  // In-progress: show what's currently in the cup + closest matches
+  const cupEntries = Object.entries(state.cup).filter(([, n]) => n > 0);
+  cupEntries.sort((a, b) => INGREDIENTS[a[0]].density - INGREDIENTS[b[0]].density);
+  const cupRows = cupEntries.map(([id, parts]) =>
+    `<div class="recipe-row"><span class="ing">${INGREDIENTS[id].name}</span><span class="amt">${parts}× &middot; ${parts * 30} ml</span></div>`
+  ).join("");
+  const closest = closestDrinks(3);
+  const pills = closest.map(({ c, dist }) =>
+    `<span class="closest-pill">${c.name} <span class="delta">${dist} step${dist === 1 ? "" : "s"}</span></span>`
+  ).join("");
+  root.innerHTML = `
+    <div class="note-title">Your cup &middot; ${total * 30} ml</div>
+    <div class="recipe-table">${cupRows}</div>
+    <div class="closest-row" style="margin-top:8px; flex-wrap: wrap;">${pills}</div>
+  `;
 }
 
 function render() {
   renderDrinks();
-  renderIngsList();
+  renderStages();
   renderLiquid();
   renderBanner();
+  renderNotes();
 }
 
 document.getElementById("clearBtn").onclick = () => { state.cup = {}; render(); };
