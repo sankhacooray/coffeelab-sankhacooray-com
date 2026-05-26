@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#3a1f10">
+<title>Coffee Lab — Build your espresso drink</title>
+
+<meta name="description" content="A small visual lab for building coffee drinks. Add and remove ingredients in a virtual cup and watch which famous coffee you accidentally just made.">
+<link rel="canonical" href="https://coffeelab.sankhacooray.com/">
+
+<meta property="og:title" content="Coffee Lab">
+<meta property="og:description" content="Build a coffee drink ingredient by ingredient and see which famous coffee you just made.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://coffeelab.sankhacooray.com/">
+<meta property="og:image" content="https://coffeelab.sankhacooray.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Coffee Lab">
+<meta name="twitter:description" content="Build a coffee drink ingredient by ingredient and see which famous coffee you just made.">
+<meta name="twitter:image" content="https://coffeelab.sankhacooray.com/og-image.png">
+
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+<style>
+  :root {
+    --bg: #1a120c;
+    --bg-2: #211710;
+    --panel: #2a1d14;
+    --panel-2: #34251a;
+    --line: #4a3424;
+    --text: #f3e7d6;
+    --muted: #b39b80;
+    --accent: #d4a574;
+    --accent-2: #c97a3c;
+    --ok: #8fd584;
+    --ceramic: #f0e4d3;
+    --ceramic-shadow: #c9b89c;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+  body {
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background:
+      radial-gradient(1200px 600px at 80% -10%, #3a2515 0%, transparent 60%),
+      radial-gradient(800px 500px at 10% 100%, #2a1810 0%, transparent 60%),
+      var(--bg);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 18px 16px 80px; }
+  header { padding: 8px 4px 12px; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -.01em; }
+  h1 .bean { display: inline-block; width: 12px; height: 16px; background: var(--accent); border-radius: 50%/40%; margin-right: 8px; transform: translateY(2px); box-shadow: inset -2px 0 0 rgba(0,0,0,.3); }
+  .sub { color: var(--muted); font-size: 13px; }
+
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 14px; margin: 12px 0; }
+  .card h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 12px; font-weight: 600; }
+
+  .layout { display: grid; grid-template-columns: 1fr 360px; gap: 16px; }
+  @media (max-width: 820px) { .layout { grid-template-columns: 1fr; } }
+
+  .families { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+  .fam-btn {
+    cursor: pointer; border: 1px solid var(--line); background: var(--panel-2);
+    color: var(--muted); padding: 5px 10px; border-radius: 999px; font-size: 12px;
+    transition: all .15s;
+  }
+  .fam-btn.active, .fam-btn:hover { color: var(--text); border-color: var(--accent); background: var(--panel); }
+
+  .drinks { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+  .drink {
+    cursor: pointer; border: 1px solid var(--line); background: var(--panel-2);
+    color: var(--text); padding: 10px 12px; border-radius: 10px; text-align: left;
+    transition: all .15s;
+    font: inherit;
+  }
+  .drink:hover { border-color: var(--accent); }
+  .drink.active { border-color: var(--accent-2); background: var(--panel); box-shadow: 0 0 0 1px var(--accent-2); }
+  .drink .name { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .drink .ings { color: var(--muted); font-size: 11px; }
+
+  /* Visualization area */
+  .viz {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 24px 14px 18px;
+  }
+  .scene {
+    position: relative;
+    width: 280px; height: 360px;
+    display: flex; justify-content: center; align-items: flex-end;
+  }
+  .saucer {
+    position: absolute; bottom: 4px;
+    width: 280px; height: 22px;
+    background: radial-gradient(ellipse at center, var(--ceramic) 0%, var(--ceramic-shadow) 90%, transparent 100%);
+    border-radius: 50%;
+    box-shadow: 0 8px 18px rgba(0,0,0,.5);
+    z-index: 0;
+  }
+  .cup-wrap {
+    position: relative;
+    width: 220px;
+    height: 280px;
+    margin-bottom: 14px;
+    z-index: 1;
+  }
+  .cup {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, #d6c5ab 0%, var(--ceramic) 12%, #fff8ec 38%, var(--ceramic) 78%, #b8a386 100%);
+    border-radius: 18px 18px 110px 110px / 18px 18px 28px 28px;
+    box-shadow:
+      inset 0 -10px 24px rgba(0,0,0,.18),
+      inset 0 8px 0 rgba(255,255,255,.4),
+      0 14px 24px rgba(0,0,0,.4);
+    overflow: hidden;
+  }
+  .cup-rim {
+    position: absolute; top: 0; left: 0; right: 0; height: 16px;
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(to bottom,
+      #6b4d33 0%,
+      #4a3422 4px,
+      #2a1c12 8px,
+      transparent 16px);
+    z-index: 4;
+    pointer-events: none;
+  }
+  .liquid {
+    position: absolute; left: 4px; right: 4px; bottom: 4px;
+    height: 0;
+    border-radius: 0 0 100px 100px / 0 0 22px 22px;
+    overflow: hidden;
+    display: flex; flex-direction: column-reverse;
+    transition: height .35s ease;
+    z-index: 2;
+  }
+  .layer {
+    width: 100%;
+    transition: height .35s ease, background .25s ease;
+    position: relative;
+  }
+  .layer.foam {
+    background:
+      radial-gradient(circle at 20% 30%, #fff 0 3px, transparent 4px),
+      radial-gradient(circle at 60% 60%, #fff 0 2px, transparent 3px),
+      radial-gradient(circle at 80% 20%, #fff 0 3px, transparent 4px),
+      radial-gradient(circle at 40% 80%, #fff 0 2px, transparent 3px),
+      linear-gradient(to bottom, #fffaf0, #f3e8d3);
+    background-size: 22px 22px, 16px 16px, 26px 26px, 18px 18px, 100% 100%;
+  }
+  .layer.whipped {
+    background:
+      radial-gradient(circle at 25% 40%, rgba(255,255,255,.95) 0 8px, transparent 9px),
+      radial-gradient(circle at 70% 30%, rgba(255,255,255,.95) 0 10px, transparent 11px),
+      radial-gradient(circle at 50% 70%, rgba(255,255,255,.95) 0 7px, transparent 8px),
+      linear-gradient(to bottom, #fffefb, #f5ecd8);
+    background-size: 28px 28px, 32px 32px, 24px 24px, 100% 100%;
+  }
+  .layer.ice {
+    background:
+      linear-gradient(135deg, rgba(255,255,255,.5) 0 4px, transparent 4px 12px),
+      linear-gradient(45deg, rgba(255,255,255,.5) 0 4px, transparent 4px 12px),
+      linear-gradient(to bottom, #d6e7f2, #b4cfdf);
+    background-size: 14px 14px, 14px 14px, 100% 100%;
+  }
+  .layer.cocoa {
+    background:
+      radial-gradient(circle at 30% 50%, #2a1408 0 1px, transparent 2px),
+      radial-gradient(circle at 60% 30%, #2a1408 0 1px, transparent 2px),
+      radial-gradient(circle at 80% 70%, #2a1408 0 1px, transparent 2px),
+      linear-gradient(to bottom, #4a2c1a, #6b3e22);
+    background-size: 6px 6px, 8px 8px, 7px 7px, 100% 100%;
+  }
+  .layer.icecream {
+    background: radial-gradient(ellipse at 30% 30%, #fff8d6 0 28px, #fff5c8 40%, #f5e6a8 100%);
+    border-radius: 60% 60% 30% 30% / 70% 70% 30% 30%;
+    margin-top: -10px;
+  }
+  .layer.sugar {
+    background: linear-gradient(to bottom, rgba(255,255,255,.4), rgba(255,255,255,.1));
+    box-shadow: inset 0 -2px 0 rgba(255,255,255,.6);
+  }
+
+  .cup-handle {
+    position: absolute;
+    right: -34px; top: 70px;
+    width: 56px; height: 110px;
+    border: 14px solid var(--ceramic);
+    border-left-color: transparent;
+    border-radius: 0 60% 60% 0 / 0 50% 50% 0;
+    box-shadow: 2px 2px 6px rgba(0,0,0,.3);
+    z-index: 0;
+  }
+  .steam {
+    position: absolute; left: 50%; top: -30px; width: 60px; height: 60px;
+    transform: translateX(-50%);
+    pointer-events: none;
+    opacity: .5;
+  }
+  .steam span {
+    position: absolute; bottom: 0;
+    width: 8px; height: 30px;
+    background: linear-gradient(to top, rgba(255,255,255,.5), rgba(255,255,255,0));
+    border-radius: 50%;
+    animation: rise 2.4s infinite ease-in;
+  }
+  .steam span:nth-child(1) { left: 18px; animation-delay: 0s; }
+  .steam span:nth-child(2) { left: 30px; animation-delay: .6s; }
+  .steam span:nth-child(3) { left: 42px; animation-delay: 1.2s; }
+  @keyframes rise {
+    0% { transform: translateY(0) scale(.6); opacity: 0; }
+    30% { opacity: .7; }
+    100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
+  }
+
+  .match-banner {
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: linear-gradient(90deg, rgba(212,165,116,.18), rgba(201,122,60,.18));
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    text-align: center;
+    min-height: 44px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .25s ease;
+  }
+  .match-banner.empty {
+    background: transparent;
+    border-color: var(--line);
+    color: var(--muted);
+  }
+  .match-banner .made {
+    font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-right: 8px;
+  }
+  .match-banner .drink-name {
+    font-size: 18px; font-weight: 700; color: var(--accent);
+  }
+  .match-banner .hint { font-size: 13px; }
+
+  /* Ingredient controls */
+  .ings-list { display: flex; flex-direction: column; gap: 6px; }
+  .ing-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 10px;
+    background: var(--panel-2); border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .ing-row.has {
+    border-color: var(--accent);
+  }
+  .ing-meta { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .swatch {
+    width: 18px; height: 18px; border-radius: 50%;
+    border: 1px solid rgba(0,0,0,.3);
+    flex-shrink: 0;
+  }
+  .ing-name { font-size: 13px; }
+  .ing-name .ing-sub { display: block; font-size: 11px; color: var(--muted); }
+  .ing-controls { display: flex; align-items: center; gap: 6px; }
+  .btn {
+    cursor: pointer; user-select: none;
+    background: var(--panel); color: var(--text);
+    border: 1px solid var(--line); border-radius: 8px;
+    width: 28px; height: 28px;
+    font-size: 16px; line-height: 1;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: all .12s;
+  }
+  .btn:hover { border-color: var(--accent); }
+  .btn:active { transform: scale(.95); }
+  .btn.plus { color: var(--accent); }
+  .btn.minus { color: var(--muted); }
+  .ing-amount {
+    min-width: 32px; text-align: center; font-variant-numeric: tabular-nums;
+    color: var(--text); font-weight: 600;
+  }
+  .ing-amount.zero { color: var(--muted); font-weight: 400; }
+
+  .actions { display: flex; gap: 8px; margin-top: 10px; }
+  .action-btn {
+    flex: 1; cursor: pointer;
+    padding: 9px 12px;
+    background: var(--panel-2);
+    color: var(--text);
+    border: 1px solid var(--line); border-radius: 10px;
+    font: inherit; font-size: 13px;
+    transition: all .12s;
+  }
+  .action-btn:hover { border-color: var(--accent); }
+
+  footer { margin-top: 30px; padding: 8px 4px; color: var(--muted); font-size: 12px; text-align: center; }
+  footer a { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1><span class="bean"></span>Coffee Lab</h1>
+    <div class="sub">Pick a coffee, or build one from scratch — add and remove ingredients and watch which famous drink you just made.</div>
+  </header>
+
+  <div class="layout">
+    <div>
+      <div class="card">
+        <h2>Famous coffees</h2>
+        <div class="families" id="families"></div>
+        <div class="drinks" id="drinks"></div>
+      </div>
+
+      <div class="card viz">
+        <div class="scene">
+          <div class="cup-wrap">
+            <div class="steam" id="steam">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="cup-handle"></div>
+            <div class="cup">
+              <div class="cup-rim"></div>
+              <div class="liquid" id="liquid"></div>
+            </div>
+          </div>
+          <div class="saucer"></div>
+        </div>
+        <div class="match-banner empty" id="matchBanner">
+          <span class="hint">Add ingredients to start brewing</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Ingredients</h2>
+      <div class="ings-list" id="ingsList"></div>
+      <div class="actions">
+        <button class="action-btn" id="clearBtn">Empty the cup</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Open source &middot; <a href="https://github.com/sankhacooray/coffeelab-sankhacooray-com">github.com/sankhacooray/coffeelab-sankhacooray-com</a>
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   INGREDIENTS  — color, density rank, optional layer class
+   density: lower = sinks (bottom of cup), higher = floats (top)
+   ============================================================ */
+const INGREDIENTS = {
+  chocolate:     { name: "Chocolate syrup",  sub: "rich cocoa syrup",       color: "#1e0e08", density: 1 },
+  sugar:         { name: "Sugar",            sub: "fine sugar",             color: "#ece2c8", density: 2, klass: "sugar" },
+  espresso:      { name: "Espresso shot",    sub: "30 ml pulled shot",      color: "#2f1a0d", density: 3 },
+  ristretto:     { name: "Ristretto shot",   sub: "short, concentrated",    color: "#1f0e07", density: 3 },
+  cold_brew:     { name: "Cold brew",        sub: "slow-steeped cold",      color: "#2d1812", density: 3 },
+  hot_water:     { name: "Hot water",        sub: "for dilution",           color: "#8a5a38", density: 4 },
+  cold_water:    { name: "Cold water",       sub: "for icing down",         color: "#aac2d0", density: 4 },
+  whisky:        { name: "Irish whiskey",    sub: "a measure",              color: "#b8651b", density: 5 },
+  steamed_milk:  { name: "Steamed milk",     sub: "textured warm milk",     color: "#f3e6cf", density: 6 },
+  cold_milk:     { name: "Cold milk",        sub: "fresh cold milk",        color: "#fbf6ec", density: 6 },
+  ice_cream:     { name: "Vanilla ice cream",sub: "one scoop",              color: "#fff5c8", density: 7, klass: "icecream" },
+  ice:           { name: "Ice cubes",        sub: "crushed or cubed",       color: "#d6e7f2", density: 8, klass: "ice" },
+  milk_foam:     { name: "Milk foam",        sub: "microfoam, airy",        color: "#fffaf0", density: 9, klass: "foam" },
+  whipped_cream: { name: "Whipped cream",    sub: "soft peaks",             color: "#fffefb", density: 10, klass: "whipped" },
+  cocoa:         { name: "Cocoa dusting",    sub: "fine powder on top",     color: "#4a2c1a", density: 11, klass: "cocoa" },
+};
+
+/* ============================================================
+   FAMOUS COFFEES
+   Each recipe is { ingredientId: parts } — parts == 30 ml unit.
+   `family` groups them in the UI.
+   ============================================================ */
+const COFFEES = [
+  { id: "espresso",     name: "Espresso",        family: "Pure espresso",   recipe: { espresso: 1 } },
+  { id: "doppio",       name: "Doppio",          family: "Pure espresso",   recipe: { espresso: 2 } },
+  { id: "ristretto",    name: "Ristretto",       family: "Pure espresso",   recipe: { ristretto: 1 } },
+
+  { id: "americano",    name: "Americano",       family: "With water",      recipe: { espresso: 1, hot_water: 3 } },
+  { id: "long_black",   name: "Long Black",      family: "With water",      recipe: { espresso: 2, hot_water: 2 } },
+
+  { id: "macchiato",    name: "Macchiato",       family: "Milk-forward",    recipe: { espresso: 1, milk_foam: 1 } },
+  { id: "cortado",      name: "Cortado",         family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 1 } },
+  { id: "flat_white",   name: "Flat White",      family: "Milk-forward",    recipe: { espresso: 2, steamed_milk: 4 } },
+  { id: "cappuccino",   name: "Cappuccino",      family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 2, milk_foam: 2 } },
+  { id: "latte",        name: "Latte",           family: "Milk-forward",    recipe: { espresso: 1, steamed_milk: 5, milk_foam: 1 } },
+
+  { id: "mocha",        name: "Café Mocha",      family: "Sweet & rich",    recipe: { chocolate: 1, espresso: 1, steamed_milk: 4, whipped_cream: 1 } },
+  { id: "vienna",       name: "Vienna",          family: "Sweet & rich",    recipe: { espresso: 2, whipped_cream: 2, cocoa: 1 } },
+  { id: "cubano",       name: "Café Cubano",     family: "Sweet & rich",    recipe: { sugar: 1, espresso: 1 } },
+
+  { id: "affogato",     name: "Affogato",        family: "With ice cream",  recipe: { espresso: 2, ice_cream: 2 } },
+
+  { id: "iced_latte",   name: "Iced Latte",      family: "Iced",            recipe: { espresso: 1, cold_milk: 4, ice: 3 } },
+  { id: "iced_americano", name: "Iced Americano",family: "Iced",            recipe: { espresso: 1, cold_water: 3, ice: 3 } },
+  { id: "cold_brew",    name: "Cold Brew",       family: "Iced",            recipe: { cold_brew: 4 } },
+
+  { id: "irish",        name: "Irish Coffee",    family: "Spirited",        recipe: { espresso: 2, whisky: 1, sugar: 1, whipped_cream: 2 } },
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+const state = {
+  cup: {},                  // { ingredientId: parts }
+  activeFamily: "All",
+  hoveredDrink: null,
+};
+
+const CAPACITY = 10;        // parts that visually fill the cup
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
+function ingredientShortLabel(parts, id) {
+  const n = INGREDIENTS[id].name.split(" ")[0].toLowerCase();
+  return `${parts}× ${n}`;
+}
+
+function renderFamilies() {
+  const families = ["All", ...Array.from(new Set(COFFEES.map(c => c.family)))];
+  const root = document.getElementById("families");
+  root.innerHTML = "";
+  for (const fam of families) {
+    const b = document.createElement("button");
+    b.className = "fam-btn" + (fam === state.activeFamily ? " active" : "");
+    b.textContent = fam;
+    b.onclick = () => { state.activeFamily = fam; renderFamilies(); renderDrinks(); };
+    root.appendChild(b);
+  }
+}
+
+function renderDrinks() {
+  const root = document.getElementById("drinks");
+  root.innerHTML = "";
+  const list = state.activeFamily === "All"
+    ? COFFEES
+    : COFFEES.filter(c => c.family === state.activeFamily);
+  const currentMatch = findMatch();
+  for (const c of list) {
+    const b = document.createElement("button");
+    b.className = "drink" + (currentMatch && currentMatch.id === c.id ? " active" : "");
+    const parts = Object.entries(c.recipe).map(([id, n]) => ingredientShortLabel(n, id)).join(" + ");
+    b.innerHTML = `<div class="name">${c.name}</div><div class="ings">${parts}</div>`;
+    b.onclick = () => { state.cup = { ...c.recipe }; render(); };
+    root.appendChild(b);
+  }
+}
+
+function renderIngsList() {
+  const root = document.getElementById("ingsList");
+  root.innerHTML = "";
+  // Order ingredients by density so the panel mirrors stacking order
+  const order = Object.keys(INGREDIENTS).sort((a, b) => INGREDIENTS[a].density - INGREDIENTS[b].density);
+  for (const id of order) {
+    const ing = INGREDIENTS[id];
+    const parts = state.cup[id] || 0;
+    const row = document.createElement("div");
+    row.className = "ing-row" + (parts > 0 ? " has" : "");
+    row.innerHTML = `
+      <div class="ing-meta">
+        <div class="swatch" style="background:${ing.color}"></div>
+        <div class="ing-name">${ing.name}<span class="ing-sub">${ing.sub}</span></div>
+      </div>
+      <div class="ing-controls">
+        <button class="btn minus" data-id="${id}" data-delta="-1">−</button>
+        <div class="ing-amount${parts === 0 ? " zero" : ""}">${parts}</div>
+        <button class="btn plus"  data-id="${id}" data-delta="1">+</button>
+      </div>
+    `;
+    root.appendChild(row);
+  }
+  root.onclick = (e) => {
+    const btn = e.target.closest("button[data-id]");
+    if (!btn) return;
+    const id = btn.dataset.id;
+    const delta = parseInt(btn.dataset.delta, 10);
+    const next = (state.cup[id] || 0) + delta;
+    if (next <= 0) delete state.cup[id];
+    else state.cup[id] = Math.min(next, 9);
+    render();
+  };
+}
+
+function renderLiquid() {
+  const liquid = document.getElementById("liquid");
+  liquid.innerHTML = "";
+  const entries = Object.entries(state.cup).filter(([, n]) => n > 0);
+  const total = entries.reduce((s, [, n]) => s + n, 0);
+  if (total === 0) {
+    liquid.style.height = "0";
+    document.getElementById("steam").style.opacity = "0";
+    return;
+  }
+  // Sort density ascending so densest is rendered first (and flex column-reverse puts it on bottom)
+  entries.sort((a, b) => INGREDIENTS[a[0]].density - INGREDIENTS[b[0]].density);
+
+  const fillFraction = Math.min(total / CAPACITY, 1);
+  liquid.style.height = (fillFraction * 100) + "%";
+
+  for (const [id, parts] of entries) {
+    const ing = INGREDIENTS[id];
+    const layer = document.createElement("div");
+    layer.className = "layer" + (ing.klass ? " " + ing.klass : "");
+    layer.style.height = ((parts / total) * 100) + "%";
+    if (!ing.klass) layer.style.background = ing.color;
+    liquid.appendChild(layer);
+  }
+
+  // Steam if it's a hot drink (has steamed_milk / espresso / hot_water and NO ice / cold_milk / cold_water / cold_brew)
+  const hasHot = ["espresso","ristretto","steamed_milk","hot_water","whisky"].some(k => state.cup[k]);
+  const hasCold = ["ice","cold_milk","cold_water","cold_brew"].some(k => state.cup[k]);
+  document.getElementById("steam").style.opacity = (hasHot && !hasCold) ? ".5" : "0";
+}
+
+function findMatch() {
+  const cupIds = Object.keys(state.cup).filter(k => state.cup[k] > 0);
+  if (cupIds.length === 0) return null;
+  for (const c of COFFEES) {
+    const recipeIds = Object.keys(c.recipe);
+    if (recipeIds.length !== cupIds.length) continue;
+    let match = true;
+    for (const id of recipeIds) {
+      if (state.cup[id] !== c.recipe[id]) { match = false; break; }
+    }
+    if (match) return c;
+  }
+  return null;
+}
+
+function renderBanner() {
+  const banner = document.getElementById("matchBanner");
+  const total = Object.values(state.cup).reduce((s, n) => s + n, 0);
+  const match = findMatch();
+  if (match) {
+    banner.className = "match-banner";
+    banner.innerHTML = `<span class="made">You just made</span><span class="drink-name">${match.name}</span>`;
+    return;
+  }
+  if (total === 0) {
+    banner.className = "match-banner empty";
+    banner.innerHTML = `<span class="hint">Add ingredients to start brewing</span>`;
+    return;
+  }
+  // Closest hint — count how far we are from each drink
+  let bestDrink = null, bestDist = Infinity;
+  for (const c of COFFEES) {
+    const allKeys = new Set([...Object.keys(c.recipe), ...Object.keys(state.cup)]);
+    let dist = 0;
+    for (const k of allKeys) dist += Math.abs((c.recipe[k] || 0) - (state.cup[k] || 0));
+    if (dist < bestDist) { bestDist = dist; bestDrink = c; }
+  }
+  banner.className = "match-banner empty";
+  banner.innerHTML = `<span class="hint">In progress — ${bestDist} step${bestDist === 1 ? "" : "s"} from a ${bestDrink.name}</span>`;
+}
+
+function render() {
+  renderDrinks();
+  renderIngsList();
+  renderLiquid();
+  renderBanner();
+}
+
+document.getElementById("clearBtn").onclick = () => { state.cup = {}; render(); };
+
+renderFamilies();
+render();
+
+/* PWA: register service worker if hosted */
+if ("serviceWorker" in navigator && location.protocol === "https:") {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
+}
+</script>
+</body>
+</html>
