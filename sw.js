@@ -1,4 +1,4 @@
-const CACHE = "coffeelab-v13";
+const CACHE = "coffeelab-v14";
 const ASSETS = [
   "./",
   "./index.html",
