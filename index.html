@@ -156,7 +156,7 @@
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; min-height: 0; position: relative; }
 
   /* cup pane */
-  .cupside { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 30px 18px 14px; }
+  .cupside { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 18px 18px 14px; }
   /* fixed height: the cup never moves when the verdict gains or loses a line */
   .verdict { flex: none; text-align: center; height: 74px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .verdict .lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
@@ -230,10 +230,16 @@
   .stepnav .pill[disabled] { visibility: hidden; }
 
   @media (min-width: 900px) and (max-height: 660px) {
-    .cupside .scene { transform: scale(.7) !important; margin-bottom: -70px !important; }
+    .cupside .scene { transform: scale(.6) !important; margin-bottom: -110px !important; }
+    .verdict { height: 64px; }
+    .verdict .nm { font-size: 23px; }
   }
   @media (min-width: 900px) and (max-height: 760px) {
-    .cupside .scene { transform: scale(.8); transform-origin: top center; margin-bottom: -38px; }
+    .cupside .scene { transform: scale(.64); transform-origin: top center; margin-bottom: -88px; }
+    .cupside .vrow { min-height: 24px; }
+    .vols { gap: 2px; }
+    .cupside .brew li { min-height: 26px; font-size: 13px; }
+    .cupside .brew li.serve { margin-top: 2px; padding: 2px 0; }
   }
   /* glasses for iced drinks: clear sides, no handle, no saucer */
   .cup-wrap.glass .cup { background: linear-gradient(to right, rgba(255,255,255,.35), rgba(255,255,255,.08) 30%, rgba(255,255,255,.05) 70%, rgba(255,255,255,.3)); box-shadow: inset 0 0 0 2px rgba(160,190,210,.55), 0 10px 20px rgba(0,0,0,.15); border-radius: 6px 6px 22px 22px / 6px 6px 14px 14px; }
@@ -252,14 +258,18 @@
   .ing .nm small { display: block; font-size: 12px; font-weight: 500; color: #b5780c; margin-top: 2px; }
   .ing.clash { box-shadow: inset 0 0 0 1.5px rgba(201,138,18,.55); }
 
-  /* brew guide: floats over the cup pane */
-  .brew-btn { all: unset; cursor: pointer; position: absolute; top: 14px; left: 14px; height: 30px; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--panel-2); color: var(--text); display: inline-flex; align-items: center; gap: 6px; z-index: 6; }
-  .brew-btn:hover, .brew-btn[aria-expanded="true"] { background: var(--accent-soft); }
-  .brew-btn[hidden] { display: none; }
-  .brew { position: absolute; inset: 52px 12px auto; max-height: calc(100% - 64px); z-index: 5; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line);
-    background: var(--bar); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 16px 40px rgba(0,0,0,.2); display: flex; flex-direction: column; gap: 6px; }
-  .brew[hidden] { display: none; }
-  .brew ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  /* left pane: ingredients or brew guide in the same space, tabs pinned to the bottom */
+  .cup-views { flex: 1; min-height: 0; width: 100%; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+  .cv { display: none; width: 100%; flex-direction: column; align-items: center; gap: 8px; }
+  .cv.on { display: flex; }
+  .cup-tabs { flex: none; display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--panel-2); margin-top: 6px; }
+  .cup-tabs button { all: unset; cursor: pointer; padding: 7px 16px; border-radius: 999px; font-size: 13.5px; color: var(--muted); transition: background-color .15s, color .15s; }
+  .cup-tabs button:hover { color: var(--text); }
+  .cup-tabs button[aria-selected="true"] { background: var(--panel); color: var(--text); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .cup-tabs button:focus-visible { outline: 2px solid var(--accent); }
+  .brew { width: 100%; max-width: 360px; }
+  .brew-empty { color: var(--muted); font-size: 13.5px; text-align: center; padding-top: 8px; }
+  .brew ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 3px; }
   .brew li { display: grid; grid-template-columns: 22px 16px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 30px; font-size: 13.5px; line-height: 1.25; }
   .brew li .k { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--panel-2); color: var(--accent); }
   .brew li .sw { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); }
@@ -277,7 +287,7 @@
   .taste-src[hidden] { display: none; }
   .taste-src b { display: block; color: var(--text); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
   .taste-src a { color: var(--accent); }
-  .taste-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, 1fr); gap: 18px; align-items: center; }
+  .taste-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(240px, 1fr); gap: 20px; align-items: stretch; }
   .radar-wrap { position: relative; height: 100%; min-height: 0; display: grid; place-items: center; }
   .radar { width: 100%; height: 100%; max-height: 440px; }
   .radar .ring { fill: none; stroke: var(--line); stroke-width: 1; }
@@ -289,11 +299,23 @@
   .radar .hit { fill: transparent; cursor: default; }
   .rtip { position: absolute; pointer-events: none; padding: 5px 9px; border-radius: 8px; font-size: 12.5px; background: var(--bar); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--line); box-shadow: 0 6px 18px rgba(0,0,0,.15); white-space: nowrap; transform: translate(-50%, -130%); }
   .rtip[hidden] { display: none; }
-  .axes { display: flex; flex-direction: column; gap: 7px; flex: none; }
-  .tside { height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 10px; justify-content: center; }
+  .chart-col { height: 100%; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .chart-tabs { flex: none; }
+  .chart-area { flex: 1; min-height: 0; width: 100%; display: flex; }
+  .chart-area > [data-pane] { flex: 1; min-height: 0; display: none; }
+  .chart-area > [data-pane].on { display: flex; }
+  .chart-area > .radar-wrap.on { display: grid; }
+  .axes { flex-direction: column; justify-content: center; gap: 18px; max-width: 520px; margin: 0 auto; padding: 0 8px; }
+  .axes .axrow { grid-template-columns: 96px minmax(0, 1fr) 34px; font-size: 14px; }
+  .axes .bar { height: 12px; border-radius: 6px; cursor: pointer; touch-action: none; }
+  .axes .bar i { border-radius: 6px; }
+  .axes .bar u { top: -6px; bottom: -6px; width: 4px; border-radius: 2px; background: var(--accent); box-shadow: 0 0 0 3px var(--panel); cursor: ew-resize; outline: none; }
+  .axes .bar u:focus-visible { box-shadow: 0 0 0 3px var(--accent-soft); width: 6px; }
+  .legend { flex: none; }
+  .tside { height: 100%; min-height: 0; display: flex; flex-direction: column; gap: 10px; }
   .mhead { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
   .mhead .pill { height: 28px; font-size: 12.5px; letter-spacing: 0; text-transform: none; font-weight: 500; }
-  .mtiles { flex: 1; min-height: 52px; max-height: 236px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); grid-auto-rows: 52px; gap: 8px; align-content: start; overflow: hidden; }
+  .mtiles { flex: 1; min-height: 52px; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); grid-auto-rows: 52px; gap: 8px; align-content: start; overflow: hidden; }
   .mtiles .tile { padding: 0 10px; gap: 9px; }
   .mtiles .tile .nm { font-size: 13.5px; }
   .mtiles .glass { width: 22px; height: 30px; padding: 1.5px; }
@@ -316,12 +338,15 @@
   @media (max-width: 899px) {
     .taste-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; }
     .tside { height: auto; gap: 6px; }
+    .chart-col { gap: 6px; }
     .mtiles { flex: none; height: 52px; min-height: 0; grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .mhead { margin-top: 0; }
     /* phones on Taste: the cup pane shows the cup and its name only, so the radar gets the room */
-    body.on-taste .cupside .vols, body.on-taste .cupside .near { display: none; }
+    body.on-taste .cupside .cup-views, body.on-taste .cupside .cup-tabs { display: none; }
     .axes { gap: 5px; }
-    .axes .axrow { display: none; }   /* phones: the radar alone; tap a point for its value */
+    .chart-tabs button { padding: 4px 10px; font-size: 12.5px; }
+    .axes { gap: 6px; }
+    .axes .axrow { font-size: 12.5px; }
     .legend { justify-content: center; }
     .radar .alab { font-size: 16px; }
     .axrow { grid-template-columns: 84px minmax(0, 1fr) 28px; font-size: 12.5px; }
@@ -353,9 +378,9 @@
     .steps { flex-wrap: nowrap; justify-content: space-between; gap: 4px; }
     .steps .pill { padding: 0 7px; }
     .empty-btn { top: 6px; right: auto; left: 6px; }
-    .brew-btn { top: 9px; left: 46px; }
     .cupside { padding-top: 40px; }
-    .brew { inset: 46px 8px auto; max-height: calc(100% - 54px); }
+    .cup-views, .cup-tabs { flex-basis: 100%; }
+    .cup-tabs { justify-content: center; margin: 4px auto 0; flex-basis: auto; }
     .cupname { display: none; }
     .cupside .scene { margin-bottom: -88px; }
     .ing .sw { width: 28px; height: 28px; }
@@ -563,8 +588,6 @@
   <section class="card cupside">
     <button class="iconbtn empty-btn" id="clearBtn" type="button" aria-label="Empty the cup" title="Empty the cup"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
     <div class="verdict idle" id="verdict" aria-live="polite"></div>
-    <button class="brew-btn" id="brewBtn" type="button" aria-expanded="false" aria-controls="brew" hidden><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5c0 1.5 1.5 1.5 1.5 3M12 2.5c0 1.5 1.5 1.5 1.5 3"/></svg>Brew guide</button>
-    <div class="brew" id="brew" hidden></div>
     <div class="note" id="note" hidden></div>
     <div class="scene">
       <div class="cup-wrap" id="cupwrap">
@@ -578,8 +601,14 @@
       <div class="saucer"></div>
       <div class="cupname" id="cupname"></div>
     </div>
-    <div class="vols" id="recipe"></div>
-    <div class="near" id="near"></div>
+    <div class="cup-views">
+      <div class="cv on" data-cv="ings"><div class="vols" id="recipe"></div><div class="near" id="near"></div></div>
+      <div class="cv" data-cv="brew"><div class="brew" id="brew"></div></div>
+    </div>
+    <div class="cup-tabs" role="tablist" aria-label="Cup details">
+      <button role="tab" data-cv="ings" aria-selected="true">Ingredients</button>
+      <button role="tab" data-cv="brew" aria-selected="false">Brew guide</button>
+    </div>
   </section>
 
   <!-- the current phase -->
@@ -599,9 +628,18 @@
         Six sensory axes from the <a href="https://worldcoffeeresearch.org/resources/sensory-lexicon" target="_blank" rel="noopener">WCR Sensory Lexicon</a> and SCA cupping. Each ingredient is scored 0–5 per 30 ml (estimates), averaged by parts, so water and ice dilute. Milk lowers bitterness, acidity and roast (<a href="https://dro.deakin.edu.au/articles/journal_contribution/Modification_of_the_bitterness_of_caffeine/21056986" target="_blank" rel="noopener">Keast 2008</a>, <a href="https://www.jstage.jst.go.jp/article/fstr/15/3/15_3_233/_article" target="_blank" rel="noopener">Akiyama 2009</a>, <a href="https://www.cris.fau.de/publications/343779430/" target="_blank" rel="noopener">Cleve 2025</a>); sugar lowers bitterness (<a href="https://academic.oup.com/chemse/article/15/5/505/317506" target="_blank" rel="noopener">Calviño 1990</a>). Cold brew reads less bitter and acidic than hot (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9407127/" target="_blank" rel="noopener">Batali 2022</a>).
       </div>
       <div class="taste-body">
-        <div class="radar-wrap"><svg class="radar" id="radar" viewBox="0 0 460 330" role="img" aria-label="Flavour profile radar"></svg><div class="rtip" id="rtip" hidden></div></div>
+        <div class="chart-col">
+          <div class="seg chart-tabs" role="tablist" aria-label="Chart type">
+            <button role="tab" data-chart="radar">Flavour radar</button>
+            <button role="tab" data-chart="bars">Flavour bars</button>
+          </div>
+          <div class="chart-area">
+            <div class="radar-wrap" data-pane="radar"><svg class="radar" id="radar" viewBox="0 0 460 330" role="img" aria-label="Flavour radar"></svg><div class="rtip" id="rtip" hidden></div></div>
+            <div class="axes" id="axes" data-pane="bars"></div>
+          </div>
+          <div class="legend" id="tLegend"><span><i class="k1"></i>Your cup</span><span><i class="k2"></i>Your profile · drag to explore</span></div>
+        </div>
         <div class="tside">
-          <div class="axes" id="axes"></div>
           <div class="mhead"><span>Inside your profile</span><button class="pill" id="tReset" type="button">Reset to cup</button></div>
           <div class="mtiles" id="matches"></div>
           <div class="pager" id="mPager"></div>
@@ -823,7 +861,7 @@ const shortName = id => { const n = INGREDIENTS[id].name; return n.length <= 12 
 /* ============================================================
    SETTINGS — units, kept in this browser's localStorage
    ============================================================ */
-const PREF_KEY = "coffeelab-settings", PREF_DEF = { temp: "c", vol: "ml", energy: "kcal" };
+const PREF_KEY = "coffeelab-settings", PREF_DEF = { temp: "c", vol: "ml", energy: "kcal", chart: "radar" };
 const prefs = { ...PREF_DEF };
 try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) {}
 const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
@@ -1084,9 +1122,9 @@ function renderCupInfo() {
     v.className = "verdict";
     v.innerHTML = `<span class="lbl">Closest</span><span class="nm">${c.name}</span><span class="away">${dist} step${dist === 1 ? "" : "s"} away</span>`;
   }
-  note.hidden = !(match && ui.noteOpen) || !!ui.brewOpen;
+  note.hidden = !(match && ui.noteOpen);
   const info = $("infoBtn");
-  if (info) info.onclick = () => { ui.noteOpen = !ui.noteOpen; if (ui.noteOpen) ui.brewOpen = false; renderCupInfo(); };
+  if (info) info.onclick = () => { ui.noteOpen = !ui.noteOpen; renderCupInfo(); };
 
   const entries = byDensity(Object.entries(state.cup).filter(([, n]) => n > 0)).reverse();
   $("recipe").innerHTML = entries.map(([id, n]) =>
@@ -1097,11 +1135,8 @@ function renderCupInfo() {
 
   // brew guide
   const steps = total ? brewSteps() : [];
-  $("brewBtn").hidden = !steps.length;
-  if (!steps.length) ui.brewOpen = false;
-  $("brewBtn").setAttribute("aria-expanded", String(!!ui.brewOpen));
-  $("brew").hidden = !ui.brewOpen;
-  if (ui.brewOpen) { const s = serveTemp();
+  if (!steps.length) $("brew").innerHTML = `<div class="brew-empty">Add ingredients to see the steps</div>`;
+  else { const s = serveTemp();
     $("brew").innerHTML = `<ol>${steps.map((st, i) => `<li><span class="k">${i + 1}</span><span class="sw" style="background:${INGREDIENTS[st.id].color}"></span><span>${st.text}</span><span class="tmp ${st.r ? tCls((st.r[0] + (st.r[1] ?? st.r[0])) / 2) : ""}">${st.r ? tFmt(st.r) : ""}</span></li>`).join("")}
       <li class="serve"><span class="k">✓</span><span></span><span>Serve ${tWord(s.mid).toLowerCase()}</span><span class="tmp ${tCls(s.mid)}">${s.est ? "≈ " : ""}${tFmt(s.r)}</span></li></ol>`; }
 
@@ -1109,7 +1144,12 @@ function renderCupInfo() {
   $("near").innerHTML = (!match && total) ? closestDrinks(3).map(({ c, dist }) =>
     `<button data-id="${c.id}">${c.name}<span class="d">${dist}</span></button>`).join("") : "";
 }
-$("brewBtn").onclick = () => { ui.brewOpen = !ui.brewOpen; if (ui.brewOpen) ui.noteOpen = false; renderCupInfo(); };
+function setCupView(v) {
+  ui.cupView = v;
+  document.querySelectorAll(".cup-tabs [data-cv]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.cv === v)));
+  document.querySelectorAll(".cup-views .cv").forEach(el => el.classList.toggle("on", el.dataset.cv === v));
+}
+document.querySelector(".cup-tabs").onclick = e => { const b = e.target.closest("[data-cv]"); if (b) setCupView(b.dataset.cv); };
 $("near").onclick = e => {
   const b = e.target.closest("[data-id]"); if (!b) return;
   state.cup = { ...COFFEES.find(c => c.id === b.dataset.id).recipe }; render();
@@ -1243,9 +1283,28 @@ function drawRadar() {
 
   // the same numbers as bars; tick = your target
   $("axes").innerHTML = AXES.map((a, i) =>
-    `<div class="axrow"><span>${a.name}</span><span class="bar"><i style="width:${v ? v[i] / 5 * 100 : 0}%"></i><u style="left:calc(${tg[i] / 5 * 100}% - 1px)"></u></span><span class="v">${v ? v[i].toFixed(1) : "–"}</span></div>`).join("")
-    + `<div class="legend"><span><i class="k1"></i>Your cup</span><span><i class="k2"></i>Your profile · drag the dots</span></div>`;
+    `<div class="axrow"><span>${a.name}</span><span class="bar" data-bar="${i}"><i style="width:${v ? v[i] / 5 * 100 : 0}%"></i><u style="left:calc(${tg[i] / 5 * 100}% - 2px)" tabindex="0" role="slider" aria-label="${a.name} limit" aria-valuemin="0" aria-valuemax="5" aria-valuenow="${tg[i]}" data-u="${i}"></u></span><span class="v">${v ? v[i].toFixed(1) : "–"}</span></div>`).join("")
+;
 }
+function setChart(c) {
+  prefs.chart = c; savePrefs();
+  document.querySelectorAll(".chart-tabs [data-chart]").forEach(b => { b.setAttribute("aria-pressed", String(b.dataset.chart === c)); b.setAttribute("aria-selected", String(b.dataset.chart === c)); });
+  document.querySelectorAll(".chart-area > [data-pane]").forEach(el => el.classList.toggle("on", el.dataset.pane === c));
+}
+document.querySelector(".chart-tabs").onclick = e => { const b = e.target.closest("[data-chart]"); if (b) setChart(b.dataset.chart); };
+setTimeout(() => setChart(prefs.chart || "radar"));
+// bars: drag a limit tick (or click anywhere on a bar), keys on a focused tick
+function barValue(e, bar) { const r = bar.getBoundingClientRect(); return (e.clientX - r.left) / r.width * 5; }
+$("axes").addEventListener("pointerdown", e => { const bar = e.target.closest("[data-bar]"); if (!bar) return;
+  ui.barDrag = +bar.dataset.bar; $("axes").setPointerCapture(e.pointerId); /* the container survives re-renders */ setTarget(ui.barDrag, barValue(e, bar)); e.preventDefault(); });
+$("axes").addEventListener("pointermove", e => { if (ui.barDrag == null) return;
+  setTarget(ui.barDrag, barValue(e, $("axes").querySelector(`[data-bar="${ui.barDrag}"]`))); });
+const endBar = () => { if (ui.barDrag != null) { const i = ui.barDrag; ui.barDrag = null; $("axes").querySelector(`[data-u="${i}"]`)?.focus({ preventScroll: true }); } };
+$("axes").addEventListener("pointerup", endBar); $("axes").addEventListener("pointercancel", endBar);
+$("axes").addEventListener("keydown", e => { const u = e.target.closest("[data-u]"); if (!u) return;
+  const d = { ArrowUp: .5, ArrowRight: .5, ArrowDown: -.5, ArrowLeft: -.5 }[e.key]; if (!d) return;
+  e.preventDefault(); e.stopPropagation(); const i = +u.dataset.u; setTarget(i, target()[i] + d); $("axes").querySelector(`[data-u="${i}"]`)?.focus(); });
+
 function renderMatches() {
   const list = insideTarget(), cur = findMatch();
   $("matches").innerHTML = list.length ? list.map(({ c }) =>
@@ -1304,7 +1363,7 @@ $("settings").addEventListener("click", e => {
   const b = e.target.closest(".seg button"); if (!b) return;
   prefs[b.closest(".seg").dataset.key] = b.dataset.v; savePrefs(); syncSettings(); render();
 });
-$("setReset").onclick = () => { Object.assign(prefs, PREF_DEF); try { localStorage.removeItem(PREF_KEY); } catch (e) {} syncSettings(); render(); };
+$("setReset").onclick = () => { Object.assign(prefs, PREF_DEF); try { localStorage.removeItem(PREF_KEY); } catch (e) {} syncSettings(); setChart(prefs.chart); render(); };
 const toggleSettings = open => { $("settings").hidden = !open; $("settingsBtn").setAttribute("aria-expanded", String(open)); };
 $("settingsBtn").onclick = e => { e.stopPropagation(); toggleSettings($("settings").hidden); };
 document.addEventListener("click", e => { if (!$("settings").hidden && !e.target.closest("#settings, #settingsBtn")) toggleSettings(false); });
@@ -1351,7 +1410,7 @@ document.addEventListener("keydown", e => {
   if (e.key === "/" && document.activeElement !== $("q")) { e.preventDefault(); openSearch(); return; }
   if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
   if (e.key === "Escape" && !$("settings").hidden) { toggleSettings(false); return; }
-  if (e.key === "Escape" && (ui.noteOpen || ui.brewOpen)) { ui.noteOpen = false; ui.brewOpen = false; renderCupInfo(); return; }
+  if (e.key === "Escape" && ui.noteOpen) { ui.noteOpen = false; renderCupInfo(); return; }
   if (ui.phase === "pick" && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); turnPage(1); }
   else if (ui.phase === "pick" && (e.key === "ArrowUp" || e.key === "PageUp")) { e.preventDefault(); turnPage(-1); }
   else if (ui.phase === "build" && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); turnIngPage(1); }
