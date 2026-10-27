@@ -253,6 +253,49 @@
   .brew li .tmp { font-size: 12px; }
   .brew li.serve { margin-top: 4px; padding: 4px 0; border-radius: 8px; background: var(--panel-2); font-weight: 600; }
 
+  /* taste: answer, notes, radar + the same values as bars */
+  .taste-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+  .taste-sum { font-size: 22px; font-weight: 700; color: var(--accent); line-height: 1.2; }
+  .taste-sum.idle { color: var(--muted); font-size: 18px; font-weight: 500; }
+  .notes-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .tnote { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 11px 0 8px; border-radius: 999px; background: var(--panel-2); font-size: 13px; }
+  .tnote .sw { width: 12px; height: 12px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); }
+  .taste-src { font-size: 13px; line-height: 1.5; color: var(--muted); background: var(--panel-2); border-radius: 12px; padding: 10px 14px; }
+  .taste-src[hidden] { display: none; }
+  .taste-src b { display: block; color: var(--text); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+  .taste-src a { color: var(--accent); }
+  .taste-body { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(220px, 1fr); gap: 18px; align-items: center; }
+  .radar-wrap { position: relative; height: 100%; min-height: 0; display: grid; place-items: center; }
+  .radar { width: 100%; height: 100%; max-height: 440px; }
+  .radar .ring { fill: none; stroke: var(--line); stroke-width: 1; }
+  .radar .spoke { stroke: var(--line); stroke-width: 1; }
+  .radar .alab { fill: var(--muted); font-size: 12.5px; }
+  .radar .cmp { fill: none; stroke: var(--muted); stroke-width: 2; stroke-dasharray: 5 4; stroke-linejoin: round; }
+  .radar .mine { fill: var(--accent); fill-opacity: .2; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; transition: all .3s; }
+  .radar .pt { fill: var(--accent); stroke: var(--panel); stroke-width: 2; }
+  .radar .hit { fill: transparent; cursor: default; }
+  .rtip { position: absolute; pointer-events: none; padding: 5px 9px; border-radius: 8px; font-size: 12.5px; background: var(--bar); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border: 1px solid var(--line); box-shadow: 0 6px 18px rgba(0,0,0,.15); white-space: nowrap; transform: translate(-50%, -130%); }
+  .rtip[hidden] { display: none; }
+  .axes { display: flex; flex-direction: column; gap: 10px; }
+  .axrow { display: grid; grid-template-columns: 92px minmax(0, 1fr) 30px; align-items: center; gap: 10px; font-size: 13.5px; }
+  .axrow .bar { position: relative; height: 8px; border-radius: 4px; background: var(--panel-2); }
+  .axrow .bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 4px; background: var(--accent); transition: width .3s; }
+  .axrow .bar u { position: absolute; top: -3px; bottom: -3px; width: 2px; border-radius: 1px; background: var(--muted); text-decoration: none; }
+  .axrow .v { text-align: right; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 14px; font-size: 12.5px; color: var(--muted); margin-top: 4px; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend .k1 { width: 16px; height: 10px; border-radius: 3px; background: var(--accent); opacity: .7; }
+  .legend .k2 { width: 16px; height: 0; border-top: 2px dashed var(--muted); }
+  @media (max-width: 899px) {
+    .taste-body { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; gap: 8px; }
+    .axes { gap: 5px; }
+    .axes .axrow { display: none; }   /* phones: the radar alone; tap a point for its value */
+    .legend { justify-content: center; }
+    .radar .alab { font-size: 16px; }
+    .axrow { grid-template-columns: 84px minmax(0, 1fr) 28px; font-size: 12.5px; }
+    .taste-sum { font-size: 19px; }
+    .notes-row .tnote:nth-child(n+4) { display: none; }
+  }
   /* one-line shared network footer */
   /* reserve the footer's final height so nothing jumps when its script arrives */
   #scn-footer { flex: none; min-height: 56px; }
@@ -308,9 +351,15 @@
   }
   @media (max-width: 520px) {
     h1 .word { display: none; }
-    .phases button { padding: 7px 12px; }
+    .phases button { padding: 7px 10px; font-size: 13.5px; }
+    .phases { gap: 2px; padding: 3px; }
+    .bar-in { gap: 6px; padding: 0 10px; }
+    .iconbtn { width: 34px; height: 34px; }
     .cta .long { display: none; } .cta .short { display: inline; }
-    .cta { padding: 10px 14px; }
+    .cta { padding: 10px 12px; }
+  }
+  @media (max-width: 400px) {
+    h1 { display: none; }
   }
   /* ---------- the cup ---------- */
   .scene {
@@ -451,6 +500,7 @@
     <nav class="phases" role="tablist" aria-label="Mode">
       <button role="tab" data-phase="pick" aria-selected="true">Learn</button>
       <button role="tab" data-phase="build" aria-selected="false">Make</button>
+      <button role="tab" data-phase="taste" aria-selected="false">Taste</button>
     </nav>
     <div class="search" id="search">
       <svg class="s-ico" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -493,6 +543,20 @@
       <div class="pills" id="families"></div>
       <div class="tiles" id="drinks"></div>
       <div class="pager" id="pager"></div>
+    </div>
+    <div class="phase" data-phase="taste">
+      <div class="taste-head">
+        <div><div class="taste-sum" id="tasteSum"></div><div class="notes-row" id="tasteNotes"></div></div>
+        <button class="info" id="tasteInfo" aria-expanded="false" aria-label="How the taste profile is worked out">i</button>
+      </div>
+      <div class="taste-src" id="tasteSrc" hidden>
+        <b>How it's worked out</b>
+        Six sensory axes from the <a href="https://worldcoffeeresearch.org/resources/sensory-lexicon" target="_blank" rel="noopener">WCR Sensory Lexicon</a> and SCA cupping. Each ingredient is scored 0–5 per 30 ml (estimates), averaged by parts, so water and ice dilute. Milk lowers bitterness, acidity and roast (<a href="https://dro.deakin.edu.au/articles/journal_contribution/Modification_of_the_bitterness_of_caffeine/21056986" target="_blank" rel="noopener">Keast 2008</a>, <a href="https://www.jstage.jst.go.jp/article/fstr/15/3/15_3_233/_article" target="_blank" rel="noopener">Akiyama 2009</a>, <a href="https://www.cris.fau.de/publications/343779430/" target="_blank" rel="noopener">Cleve 2025</a>); sugar lowers bitterness (<a href="https://academic.oup.com/chemse/article/15/5/505/317506" target="_blank" rel="noopener">Calviño 1990</a>). Cold brew reads less bitter and acidic than hot (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC9407127/" target="_blank" rel="noopener">Batali 2022</a>).
+      </div>
+      <div class="taste-body">
+        <div class="radar-wrap"><svg class="radar" id="radar" viewBox="0 0 460 330" role="img" aria-label="Flavour profile radar"></svg><div class="rtip" id="rtip" hidden></div></div>
+        <div class="axes" id="axes"></div>
+      </div>
     </div>
     <div class="phase" data-phase="build">
       <div class="pills steps" id="steps"></div>
@@ -639,6 +703,61 @@ function closestDrinks(n = 3) {
     return { c, dist };
   }).sort((a, b) => a.dist - b.dist);
   return ranked.slice(0, n);
+}
+
+/* ============================================================
+   TASTE — six sensory axes (WCR Sensory Lexicon / SCA cupping),
+   0–5 per 30 ml part. Scores are estimates anchored in the sources
+   listed in the Taste tab's ⓘ.
+   ============================================================ */
+const AXES = [
+  { id: "sweetness",  name: "Sweetness",  word: "sweet" },
+  { id: "acidity",    name: "Acidity",    word: "bright" },
+  { id: "bitterness", name: "Bitterness", word: "bitter" },
+  { id: "body",       name: "Body",       word: "full-bodied" },
+  { id: "roast",      name: "Roast",      word: "roasty" },
+  { id: "creaminess", name: "Creaminess", word: "creamy" },
+];
+const TASTE = {
+  espresso:           { s: [1, 3, 4, 3, 5, 1], notes: ["roasty", "dark cocoa", "bright"] },
+  ristretto:          { s: [2, 3, 3, 4, 5, 1], notes: ["syrupy", "caramelised", "intense"] },
+  cold_brew:          { s: [2, 1, 2, 2, 3, 0], notes: ["smooth", "chocolatey", "floral"] },
+  hot_water:          { s: [0, 0, 0, 0, 0, 0], notes: [] },
+  cold_water:         { s: [0, 0, 0, 0, 0, 0], notes: [] },
+  ice:                { s: [0, 0, 0, 0, 0, 0], notes: ["chilled"] },
+  steamed_milk:       { s: [2, 0, 0, 3, 0, 4], notes: ["milky", "sweet-caramel", "velvety"] },
+  cold_milk:          { s: [1, 0, 0, 3, 0, 4], notes: ["milky", "fresh"] },
+  oat_milk:           { s: [2, 0, 0, 3, 0, 3], notes: ["oaty", "malty", "cereal"] },
+  almond_milk:        { s: [1, 0, 1, 1, 0, 1], notes: ["nutty", "marzipan"] },
+  soy_milk:           { s: [1, 0, 1, 3, 0, 3], notes: ["beany", "nutty"] },
+  pistachio_oat_milk: { s: [2, 0, 0, 3, 0, 3], notes: ["pistachio", "nutty"] },
+  sugar:              { s: [5, 0, 0, 1, 0, 0], notes: ["sweet"] },
+  chocolate:          { s: [4, 0, 1, 3, 1, 1], notes: ["cocoa", "fudgy"] },
+  vanilla_syrup:      { s: [4, 0, 0, 1, 0, 0], notes: ["vanilla"] },
+  caramel_syrup:      { s: [5, 0, 1, 2, 1, 0], notes: ["toffee", "caramelised"] },
+  whisky:             { s: [1, 0, 1, 1, 1, 0], notes: ["whiskey", "oaky", "warming"] },
+  milk_foam:          { s: [1, 0, 0, 1, 0, 3], notes: ["airy", "silky"] },
+  whipped_cream:      { s: [2, 0, 0, 3, 0, 5], notes: ["creamy", "buttery"] },
+  ice_cream:          { s: [4, 0, 0, 4, 0, 5], notes: ["vanilla", "dessert"] },
+  cocoa:              { s: [0, 1, 3, 0, 2, 0], notes: ["cocoa", "bittersweet"] },
+};
+const DAIRYISH = [...Object.keys(INGREDIENTS).filter(id => INGREDIENTS[id].stage === "milk"), "milk_foam", "whipped_cream", "ice_cream"];
+function profile(cup) {
+  const e = Object.entries(cup).filter(([id, n]) => n > 0 && TASTE[id]);
+  const w = ([id, n]) => id === "ice" ? n * 0.5 : n;          // ice only partly melts
+  const W = e.reduce((s, x) => s + w(x), 0);
+  if (!W) return null;
+  const v = AXES.map((_, a) => e.reduce((s, x) => s + w(x) * TASTE[x[0]].s[a], 0) / W);
+  const m = e.filter(([id]) => DAIRYISH.includes(id)).reduce((s, x) => s + w(x), 0) / W;   // milk fraction
+  v[2] *= 1 - 0.4 * m; v[1] *= 1 - 0.3 * m; v[4] *= 1 - 0.3 * m;   // milk masks bitter, sour, roast
+  v[2] *= 1 - 0.4 * (v[0] / 5);                                     // sugar masks bitterness
+  return v.map(x => Math.min(5, Math.round(x * 1.3 * 10) / 10));    // display scale
+}
+function tasteNotes(cup) {
+  const score = {}, from = {};
+  for (const [id, n] of Object.entries(cup)) if (n > 0 && TASTE[id])
+    TASTE[id].notes.forEach((t, i) => { score[t] = (score[t] || 0) + n * (3 - i); from[t] = from[t] || id; });
+  return Object.keys(score).sort((a, b) => score[b] - score[a]).slice(0, 5).map(t => ({ t, id: from[t] }));
 }
 
 /* ============================================================
@@ -1000,11 +1119,59 @@ $("results").addEventListener("click", e => { const b = e.target.closest("[data-
 $("q").addEventListener("blur", () => setTimeout(() => { if (document.activeElement !== $("q")) { $("results").hidden = true; $("q").closest(".topbar").classList.remove("searching"); } }, 120));
 $("searchOpen").onclick = openSearch;
 
+function renderTaste() {
+  const cup = state.cup, v = profile(cup), match = findMatch();
+  const near = !match && v ? closestDrinks(1)[0].c : null, cv = near ? profile(near.recipe) : null;
+  // answer first: the two strongest axes in words
+  const sum = $("tasteSum");
+  if (!v) { sum.className = "taste-sum idle"; sum.textContent = "Empty cup"; }
+  else {
+    const top = AXES.map((a, i) => [a.word, v[i]]).filter(x => x[1] >= 1.2).sort((a, b) => b[1] - a[1]).slice(0, 2).map(x => x[0]);
+    sum.className = "taste-sum";
+    sum.textContent = top.length ? top.join(" & ").replace(/^./, c => c.toUpperCase()) : "Light & clean";
+  }
+  $("tasteNotes").innerHTML = v ? tasteNotes(cup).map(n =>
+    `<span class="tnote"><span class="sw" style="background:${INGREDIENTS[n.id].color}"></span>${n.t}</span>`).join("") : "";
+
+  // radar
+  const cx = 230, cy = 168, R = 118, N = AXES.length;
+  const pt = (i, val) => { const a = -Math.PI / 2 + i * 2 * Math.PI / N; return [cx + Math.cos(a) * R * val / 5, cy + Math.sin(a) * R * val / 5]; };
+  const poly = vals => vals.map((x, i) => pt(i, x).map(n => n.toFixed(1)).join(",")).join(" ");
+  let s = "";
+  for (let k = 1; k <= 5; k++) s += `<polygon class="ring" points="${poly(Array(N).fill(k))}"/>`;
+  AXES.forEach((a, i) => {
+    const [x, y] = pt(i, 5), [lx, ly] = pt(i, 6.15);
+    s += `<line class="spoke" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`;
+    s += `<text class="alab" x="${lx.toFixed(1)}" y="${(ly + 4).toFixed(1)}" text-anchor="${Math.abs(lx - cx) < 4 ? "middle" : lx > cx ? "start" : "end"}">${a.name}</text>`;
+  });
+  if (cv) s += `<polygon class="cmp" points="${poly(cv)}"/>`;
+  if (v) {
+    s += `<polygon class="mine" points="${poly(v)}"/>`;
+    v.forEach((x, i) => { const [px, py] = pt(i, x); s += `<circle class="pt" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="4"/><circle class="hit" data-a="${i}" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="14"/>`; });
+  }
+  $("radar").innerHTML = s;
+
+  // the same numbers as bars (readable without the chart); dashed tick = closest famous coffee
+  $("axes").innerHTML = AXES.map((a, i) =>
+    `<div class="axrow"><span>${a.name}</span><span class="bar"><i style="width:${v ? v[i] / 5 * 100 : 0}%"></i>${cv ? `<u style="left:calc(${cv[i] / 5 * 100}% - 1px)"></u>` : ""}</span><span class="v">${v ? v[i].toFixed(1) : "–"}</span></div>`).join("")
+    + (cv ? `<div class="legend"><span><i class="k1"></i>Your cup</span><span><i class="k2"></i>${near.name}</span></div>` : "");
+}
+$("radar").addEventListener("mousemove", e => {
+  const h = e.target.closest(".hit"), tip = $("rtip");
+  if (!h) { tip.hidden = true; return; }
+  const v = profile(state.cup), i = +h.dataset.a, box = $("radar").getBoundingClientRect(), wrap = $("radar").parentNode.getBoundingClientRect();
+  tip.textContent = `${AXES[i].name} ${v[i].toFixed(1)} / 5`;
+  tip.style.left = (e.clientX - wrap.left) + "px"; tip.style.top = (e.clientY - wrap.top) + "px"; tip.hidden = false;
+});
+$("radar").addEventListener("mouseleave", () => { $("rtip").hidden = true; });
+$("radar").addEventListener("click", e => $("radar").dispatchEvent(new MouseEvent("mousemove", { clientX: e.clientX, clientY: e.clientY, bubbles: true })) || 0);
+$("tasteInfo").onclick = () => { const s = $("tasteSrc"); s.hidden = !s.hidden; $("tasteInfo").setAttribute("aria-expanded", String(!s.hidden)); };
+
 function setPhase(p) {
   ui.phase = p;
   document.querySelectorAll(".phases [data-phase]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.phase === p)));
   document.querySelectorAll(".phase").forEach(el => el.classList.toggle("on", el.dataset.phase === p));
-  if (p === "pick") paginate(); else renderBuild();
+  if (p === "pick") paginate(); else if (p === "build") renderBuild(); else renderTaste();
 }
 document.querySelector(".phases").onclick = e => { const b = e.target.closest("[data-phase]"); if (b) setPhase(b.dataset.phase); };
 
@@ -1013,6 +1180,7 @@ function render() {
   renderBuild();
   renderLiquid();
   renderCupInfo();
+  if (ui.phase === "taste") renderTaste();
   paginate();          // the cup pane may have grown: re-fit the tiles beside or below it
 }
 
