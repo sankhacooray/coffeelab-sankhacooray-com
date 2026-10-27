@@ -124,9 +124,20 @@
   .res-empty { padding: 10px 12px; color: var(--muted); font-size: 13.5px; }
   .iconbtn.search-open { display: none; }
   /* settings: a floating panel under the gear */
-  .settings { position: absolute; top: calc(56px + env(safe-area-inset-top)); right: 18px; width: 320px; z-index: 35; padding: 14px; border-radius: 16px; border: 1px solid var(--line);
-    background: var(--bar); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 16px 40px rgba(0,0,0,.22); display: flex; flex-direction: column; gap: 10px; }
-  .settings[hidden] { display: none; }
+  /* settings: a full view in place of the panes (gear in the app bar opens and closes it) */
+  .settings-view { flex: 1; min-height: 0; display: flex; padding: 4px 18px 0; }
+  .settings-view[hidden] { display: none; }
+  body.on-settings .main { display: none; }
+  .set-card { flex: 1; min-height: 0; padding: 22px 26px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); grid-template-rows: auto minmax(0, 1fr); gap: 18px 40px; align-content: start; }
+  .set-head { grid-column: 1 / -1; display: flex; align-items: center; gap: 14px; }
+  .set-head h2 { margin: 0; font-size: 22px; }
+  .set-head .set-tabs { display: none; }
+  .set-head #setClose { margin-left: auto; }
+  .set-units { max-width: 440px; }
+  .set-row { font-size: 15px; }
+  .set-names { font-size: 13.5px; }
+  .set-names code { font-size: 13px; }
+  #settingsBtn[aria-expanded="true"] { color: var(--text); background: var(--accent-soft); }
   .set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 600; }
   .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: var(--panel-2); }
   .seg button { all: unset; cursor: pointer; min-width: 44px; text-align: center; padding: 5px 12px; border-radius: 999px; font-size: 13px; color: var(--muted); }
@@ -177,9 +188,7 @@
   .slots { display: flex; flex-wrap: wrap; gap: 6px; }
   .slot { display: inline-flex; flex-direction: column; padding: 5px 10px; border-radius: 10px; background: var(--panel-2); font-size: 11.5px; color: var(--muted); line-height: 1.3; }
   .slot strong { font-size: 13.5px; color: var(--text); }
-  .set-tabs { align-self: flex-start; }
-  .st-pane { display: flex; flex-direction: column; gap: 10px; }
-  .st-pane[hidden] { display: none; }
+  .st-pane { display: flex; flex-direction: column; gap: 12px; min-height: 0; }
   .set-names { font-size: 12.5px; color: var(--muted); line-height: 1.45; }
   .set-names b { display: block; color: var(--text); font-size: 13.5px; margin-bottom: 2px; }
   .set-names code { font: 600 12px/1.4 ui-monospace, Menlo, monospace; color: var(--accent); display: block; margin: 2px 0 6px; }
@@ -291,9 +300,10 @@
   .fact span { font-size: 11px; color: var(--muted); }
   .fact.hi { background: rgba(201,138,18,.16); }
   .warns { display: flex; flex-wrap: wrap; gap: 5px; }
-  .warn { display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; line-height: 1.2; background: rgba(201,138,18,.14); color: var(--text); cursor: help; }
+  .warn { flex: none; max-width: 100%; display: inline-flex; align-items: center; gap: 6px; min-height: 28px; padding: 3px 10px; border-radius: 999px; font-size: 12.5px; line-height: 1.2; background: rgba(201,138,18,.14); color: var(--text); cursor: help; }
   .warn i { font-style: normal; color: #b5780c; font-weight: 700; }
-  .warn.info { background: var(--panel-2); color: var(--muted); }
+  .warn.ok { background: rgba(63,143,58,.12); }
+  .warn.ok i { color: var(--ok); }
   .nutri-foot { display: flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--muted); }
   .cup-tabs button { padding: 7px 13px; }
   .lpager { display: flex; justify-content: center; gap: 7px; min-height: 9px; }
@@ -445,7 +455,12 @@
     .phases { gap: 2px; padding: 3px; }
     .bar-in { gap: 6px; padding: 0 10px; }
     .iconbtn { width: 32px; height: 32px; }
-    .settings { right: 8px; left: 8px; width: auto; }
+    .settings-view { padding: 0 10px; }
+    .set-card { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); padding: 16px; gap: 14px; }
+    .set-head { flex-wrap: wrap; }
+    .set-head .set-tabs { display: inline-flex; }
+    .set-card .st-pane:not(.on) { display: none; }
+    .set-names { font-size: 12.5px; } .set-names code { font-size: 11.5px; }
     .cta .long { display: none; } .cta .short { display: inline; }
     .cta { padding: 10px 11px; font-size: 13px; }
   }
@@ -586,6 +601,34 @@
     30% { opacity: .7; }
     100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
   }
+  .cup-tabs .sm { display: none; }
+
+  /* ---------- narrow screens: two columns in the cup pane ----------
+     left: name, the current tab's content, the tabs; right: the cup, spanning the card's height */
+  @media (max-width: 899px) {
+    .cupside.card { display: grid; grid-template-columns: minmax(0, 1fr) var(--cupcol, 150px);
+      grid-template-areas: "verdict scene" "views scene" "tabs scene"; grid-template-rows: auto minmax(0, 1fr) auto;
+      column-gap: 10px; row-gap: 6px; padding: 40px 12px 12px; align-items: start; }
+    .cupside .verdict { grid-area: verdict; }
+    .cupside .cup-views { grid-area: views; height: min(230px, 30vh); max-height: none; align-items: stretch; }   /* fixed: switching tabs never moves the page */
+    .cupside .cv { align-items: stretch; }
+    .cupside .cup-tabs { grid-area: tabs; justify-self: stretch; margin: 2px 0 0; }
+    .cupside .cup-tabs button { flex: 1; text-align: center; padding: 6px 4px; font-size: 12.5px; }
+    .cupside .cup-tabs .lg { display: none; } .cupside .cup-tabs .sm { display: inline; }
+    .cupside .scene { grid-area: scene; align-self: center; justify-self: center; transform: none !important; margin: 0 0 18px !important; zoom: var(--cz, .55); }
+    .cupside .cupname { display: block; font-size: 15px; }
+    .cupside .vols, .cupside .brew, .cupside .nutri { max-width: none; }
+    .cupside .vrow { grid-template-columns: 14px minmax(0, 1fr) auto; gap: 7px; padding: 1px 6px; }
+    .cupside .vrow .sw { width: 14px; height: 14px; }
+    .cupside .vrow:not(.total) .tmp { display: none; }      /* temperatures live in the Brew guide here */
+    .cupside .vrow.total { display: flex; flex-wrap: wrap; gap: 0 8px; padding: 3px 8px; }
+    .cupside .vrow.total > span:first-child { display: none; }
+    .cupside .vrow.total .nm { flex-basis: 100%; }
+    .cupside .facts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cupside .fact { padding: 4px 2px; } .cupside .fact b { font-size: 13.5px; }
+    .cupside .nutri { gap: 6px; }
+    body.on-taste .cupside.card { grid-template-areas: "verdict scene"; grid-template-rows: auto; }
+  }
 </style>
 </head>
 <body>
@@ -604,17 +647,6 @@
     </div>
     <button class="iconbtn search-open" id="searchOpen" type="button" aria-label="Search" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
     <button class="iconbtn" id="settingsBtn" type="button" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
-    <div class="settings" id="settings" role="dialog" aria-label="Settings" hidden>
-      <div class="seg set-tabs" role="tablist"><button role="tab" data-st="units" aria-pressed="true">Units</button><button role="tab" data-st="names" aria-pressed="false">Blend names</button></div>
-      <div class="st-pane" data-st="units">
-      <div class="set-row"><span>Temperature</span><div class="seg" data-key="temp"><button data-v="c">°C</button><button data-v="f">°F</button></div></div>
-      <div class="set-row"><span>Volume</span><div class="seg" data-key="vol"><button data-v="ml">ml</button><button data-v="oz">fl oz</button></div></div>
-      <div class="set-row"><span>Energy</span><div class="seg" data-key="energy"><button data-v="kcal">kcal</button><button data-v="kj">kJ</button></div></div>
-      </div>
-      <div class="st-pane" data-st="names" hidden><div class="set-names" id="setNames"></div></div>
-      <p class="set-warn"><b>⚠ Saved in this browser only.</b> These settings live in this site's local storage on this device. Clearing site data or your browser cache resets them, and other browsers or devices won't see them.</p>
-      <button class="pill" id="setReset" type="button">Reset to defaults</button>
-    </div>
     <button class="iconbtn" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme"><svg class="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
     <button class="cta" id="randomBtn" type="button"><span class="long">Pour a random coffee</span><span class="short">Random</span></button>
   </div>
@@ -644,8 +676,8 @@
       <div class="cv" data-cv="nutri"><div class="nutri" id="nutri"></div></div>
     </div>
     <div class="cup-tabs" role="tablist" aria-label="Cup details">
-      <button role="tab" data-cv="ings" aria-selected="true">Ingredients</button>
-      <button role="tab" data-cv="brew" aria-selected="false">Brew guide</button>
+      <button role="tab" data-cv="ings" aria-selected="true"><span class="lg">Ingredients</span><span class="sm">Recipe</span></button>
+      <button role="tab" data-cv="brew" aria-selected="false"><span class="lg">Brew guide</span><span class="sm">Brew</span></button>
       <button role="tab" data-cv="nutri" aria-selected="false">Nutrition</button>
     </div>
   </section>
@@ -654,7 +686,7 @@
   <section class="card">
     <div class="phase on" data-phase="pick">
       <div class="pills" id="families"></div>
-      <div class="tiles" id="drinks"></div>
+      <div class="tiles" id="drinks" data-stretch="74"></div>
       <div class="pager" id="pager"></div>
     </div>
     <div class="phase" data-phase="taste">
@@ -687,7 +719,7 @@
     </div>
     <div class="phase" data-phase="build">
       <div class="pills steps" id="steps"></div>
-      <div class="ings" id="ings"></div>
+      <div class="ings" id="ings" data-stretch="64"></div>
       <div class="pager" id="ingPager"></div>
       <div class="stepnav">
         <button class="pill" id="prevStep" type="button"></button>
@@ -696,6 +728,24 @@
     </div>
   </section>
 </main>
+
+<section class="settings-view" id="settings" aria-label="Settings" hidden>
+  <div class="card set-card">
+    <div class="set-head">
+      <h2>Settings</h2>
+      <div class="seg set-tabs" role="tablist"><button role="tab" data-st="units" aria-pressed="true">Units</button><button role="tab" data-st="names" aria-pressed="false">Blend names</button></div>
+      <button class="iconbtn" id="setClose" type="button" aria-label="Close settings" title="Close settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="st-pane set-units" data-st="units">
+      <div class="set-row"><span>Temperature</span><div class="seg" data-key="temp"><button data-v="c">°C</button><button data-v="f">°F</button></div></div>
+      <div class="set-row"><span>Volume</span><div class="seg" data-key="vol"><button data-v="ml">ml</button><button data-v="oz">fl oz</button></div></div>
+      <div class="set-row"><span>Energy</span><div class="seg" data-key="energy"><button data-v="kcal">kcal</button><button data-v="kj">kJ</button></div></div>
+      <p class="set-warn"><b>⚠ Saved in this browser only.</b> These settings and your taste profile live in this site's local storage on this device. Clearing site data or your browser cache resets them, and other browsers or devices won't see them.</p>
+      <button class="pill" id="setReset" type="button">Reset to defaults</button>
+    </div>
+    <div class="st-pane set-names-pane" data-st="names"><div class="set-names" id="setNames"></div></div>
+  </div>
+</section>
 
 <div id="scn-footer"></div>
 <script async src="https://cdn.sankhacooray.com/js/sankha-footer.js" data-site="coffeelab.sankhacooray.com" data-tagline="a small visual coffee lab"></script>
@@ -1125,6 +1175,7 @@ function renderDrinks() {
 function fitPages(root, pager, key) {
   const items = [...root.children];
   items.forEach(t => t.classList.remove("off"));
+  if (root.dataset.stretch) root.style.gridAutoRows = "";
   pager.innerHTML = "";
   if (!items.length || !root.offsetParent) return;
   const cs = getComputedStyle(root);
@@ -1134,6 +1185,10 @@ function fitPages(root, pager, key) {
   const per = cols * rows, pages = Math.ceil(items.length / per);
   ui[key] = Math.min(ui[key], pages - 1);
   items.forEach((t, i) => t.classList.toggle("off", Math.floor(i / per) !== ui[key]));
+  if (root.dataset.stretch) {        // grow rows to fill the box, up to a cap
+    const used = pages > 1 ? rows : Math.ceil(items.length / cols);
+    root.style.gridAutoRows = Math.floor(Math.min(+root.dataset.stretch, (root.clientHeight - gap * (used - 1)) / used)) + "px";
+  }
   if (pages > 1) pager.innerHTML = Array.from({ length: pages }, (_, i) =>
     `<button class="${i === ui[key] ? "on" : ""}" data-page="${i}" aria-label="Page ${i + 1}"></button>`).join("");
 }
@@ -1259,7 +1314,7 @@ function renderCupInfo() {
         <div class="fact${f.added > 25 ? " hi" : ""}"><b>${f.sugars} g</b><span>sugars</span></div>
         <div class="fact"><b>${f.fat} g</b><span>fat</span></div>
         <div class="fact"><b>${f.protein} g</b><span>protein</span></div></div>
-      <div class="warns">${w.length ? w.map(([t, d]) => `<span class="warn" title="${d}"><i>⚠</i>${t}</span>`).join("") : `<span class="warn info">No common allergens flagged</span>`}</div>
+      <div class="warns">${w.length ? w.map(([t, d]) => `<span class="warn" title="${d}"><i>⚠</i>${t}</span>`).join("") : `<span class="warn ok" title="None of the common allergens or cautions tracked here (milk, tree nuts, soy, gluten, egg, alcohol, high caffeine, high added sugar)"><i>✓</i>No common allergens</span>`}</div>
       <div class="nutri-foot"><span>Estimates per cup · not medical advice</span><button class="info" title="Per-30 ml values from USDA FoodData Central and typical product labels; caffeine guide from EFSA (2015), sugar guide from WHO (2015). Recipes and brands vary: check labels if you have an allergy or condition." aria-label="About these numbers">i</button></div>`; }
 
   // in progress: tap a near drink to pour it
@@ -1299,6 +1354,16 @@ function fitCupView() {
   pager.onclick = e => { const b = e.target.closest("[data-lp]"); if (b) { ui[key] = +b.dataset.lp; fitCupView(); } };
 }
 new ResizeObserver(() => fitCupView()).observe(document.querySelector(".cup-views"));
+
+/* narrow screens: the cup scales to ~40% of the card's width */
+const narrowMQ = matchMedia("(max-width: 899px)");
+function sizeCupColumn() {
+  const cs = document.querySelector(".cupside");
+  if (!narrowMQ.matches) { cs.style.removeProperty("--cz"); cs.style.removeProperty("--cupcol"); return; }
+  const z = Math.max(.42, Math.min(.85, cs.clientWidth * .4 / 260));
+  cs.style.setProperty("--cz", z.toFixed(3)); cs.style.setProperty("--cupcol", Math.round(260 * z) + "px");
+}
+new ResizeObserver(sizeCupColumn).observe(document.querySelector(".cupside"));
 
 function setCupView(v) {
   ui.cupView = v;
@@ -1352,6 +1417,7 @@ function renderResults() {
 }
 function choose(h) {
   if (!h) return;
+  toggleSettings(false);
   if (h.kind === "drink") {
     state.cup = { ...h.item.recipe }; ui.noteOpen = false;
     if (state.activeFamily !== "All" && state.activeFamily !== h.item.family) { state.activeFamily = "All"; renderFamilies(); }
@@ -1472,14 +1538,15 @@ function renderMatches() {
 $("matches").onclick = e => { const b = e.target.closest("[data-id]"); if (!b) return;
   state.cup = { ...COFFEES.find(c => c.id === b.dataset.id).recipe }; ui.noteOpen = false; render(); };
 $("mPager").onclick = e => { const b = e.target.closest("[data-page]"); if (b) { ui.mPage = +b.dataset.page; fitPages($("matches"), $("mPager"), "mPage"); } };
-$("tReset").onclick = () => { ui.targetTouched = false; ui.mPage = 0; renderTaste(); };
+$("tReset").onclick = () => { ui.targetTouched = false; ui.mPage = 0; delete prefs.target; savePrefs(); renderTaste(); };
+if (Array.isArray(prefs.target) && prefs.target.length === AXES.length) { ui.target = prefs.target.map(Number); ui.targetTouched = true; }   // restore a saved profile
 new ResizeObserver(() => { if (ui.phase === "taste") fitPages($("matches"), $("mPager"), "mPage"); }).observe($("matches"));
 
 // drag a dot along its axis
 function setTarget(i, val) {
   const t = target().slice(); t[i] = Math.max(0, Math.min(5, Math.round(val * 4) / 4));
   if (t[i] === ui.target[i] && ui.targetTouched) return;
-  ui.target = t; ui.targetTouched = true; ui.mPage = 0; drawRadar(); renderMatches();
+  ui.target = t; ui.targetTouched = true; ui.mPage = 0; prefs.target = t; savePrefs(); drawRadar(); renderMatches();
 }
 function svgPoint(e) { const svg = $("radar"), p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
 $("radar").addEventListener("pointerdown", e => {
@@ -1520,14 +1587,21 @@ $("settings").addEventListener("click", e => {
   const b = e.target.closest(".seg button"); if (!b) return;
   prefs[b.closest(".seg").dataset.key] = b.dataset.v; savePrefs(); syncSettings(); render();
 });
-$("setReset").onclick = () => { Object.assign(prefs, PREF_DEF); try { localStorage.removeItem(PREF_KEY); } catch (e) {} syncSettings(); setChart(prefs.chart); render(); };
-const toggleSettings = open => { $("settings").hidden = !open; $("settingsBtn").setAttribute("aria-expanded", String(open)); };
-$("settingsBtn").onclick = e => { e.stopPropagation(); toggleSettings($("settings").hidden); };
-document.addEventListener("click", e => { if (!$("settings").hidden && !e.target.closest("#settings, #settingsBtn")) toggleSettings(false); });
+$("setReset").onclick = () => { Object.assign(prefs, PREF_DEF); delete prefs.target; ui.targetTouched = false; try { localStorage.removeItem(PREF_KEY); } catch (e) {} syncSettings(); setChart(prefs.chart); render(); };
+function toggleSettings(open) {
+  $("settings").hidden = !open; document.body.classList.toggle("on-settings", open);
+  $("settingsBtn").setAttribute("aria-expanded", String(open));
+  if (!open) { paginate(); fitCupView(); }
+}
+$("settingsBtn").onclick = () => toggleSettings($("settings").hidden);
+$("setClose").onclick = () => toggleSettings(false);
 syncSettings();
-document.querySelector(".set-tabs").onclick = e => { const b = e.target.closest("[data-st]"); if (!b) return;
-  document.querySelectorAll(".set-tabs [data-st]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
-  document.querySelectorAll(".st-pane").forEach(p => p.hidden = p.dataset.st !== b.dataset.st); };
+function setSettingsTab(st) {
+  document.querySelectorAll(".set-tabs [data-st]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.st === st)));
+  document.querySelectorAll(".set-card .st-pane").forEach(p => p.classList.toggle("on", p.dataset.st === st));
+}
+document.querySelector(".set-tabs").onclick = e => { const b = e.target.closest("[data-st]"); if (b) setSettingsTab(b.dataset.st); };
+setSettingsTab("units");
 $("setNames").innerHTML = `<b>How custom blends are named</b><code>[Iced] [Spiked] [Flavour] [Milk] [Shots] Base [Style] [Topping]</code><dl>${NAME_SLOTS.map(([k, d]) => `<dt>${k}</dt><dd>${d}</dd>`).join("")}</dl>`;
 
 function setPhase(p) {
@@ -1537,7 +1611,7 @@ function setPhase(p) {
   document.body.classList.toggle("on-taste", p === "taste");
   if (p === "pick") paginate(); else if (p === "build") renderBuild(); else renderTaste();
 }
-document.querySelector(".phases").onclick = e => { const b = e.target.closest("[data-phase]"); if (b) setPhase(b.dataset.phase); };
+document.querySelector(".phases").onclick = e => { const b = e.target.closest("[data-phase]"); if (b) { toggleSettings(false); setPhase(b.dataset.phase); } };
 
 function render() {
   renderDrinks();
