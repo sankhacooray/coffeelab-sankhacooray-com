@@ -80,83 +80,148 @@
     --saucer-shadow: rgba(0,0,0,.5); --page-bg: #1a120c; color-scheme: dark;
   }
   * { box-sizing: border-box; }
-  /* rule 14: body is the scroller, no overscroll bounce, no white edge */
+  /* rules 14, 33, 36: nothing scrolls, no overscroll bounce, no white edge */
   html { height: 100%; overflow: hidden; background: var(--page-bg); overscroll-behavior: none; }
   body {
-    height: 100%; margin: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: none;
+    height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none;
     color: var(--text);
-    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font: 15px/1.4 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     background:
       radial-gradient(1200px 600px at 80% -10%, var(--bg-glow-1) 0%, transparent 60%),
       radial-gradient(800px 500px at 10% 100%, var(--bg-glow-2) 0%, transparent 60%),
       var(--bg);
-    background-attachment: fixed;
     display: flex; flex-direction: column;
   }
+  button { font: inherit; color: inherit; }
 
-  /* Full-width app bar (rules 7, 10, 12, 19, 23): brand left, theme switch + one CTA right, no bottom border */
-  .topbar {
-    position: sticky; top: 0; z-index: 20; flex: none;
-    padding-top: env(safe-area-inset-top);
-    background: var(--bar); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
-  }
-  .topbar .bar-in { display: flex; align-items: center; gap: 14px; height: 56px; padding: 0 max(18px, env(safe-area-inset-left)) 0 max(18px, env(safe-area-inset-left)); }
+  /* Full-width app bar: brand, the two phases, theme switch, one CTA */
+  .topbar { flex: none; padding-top: env(safe-area-inset-top); }
+  .bar-in { display: flex; align-items: center; gap: 14px; height: 60px; padding: 0 18px; }
   h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; white-space: nowrap; display: flex; align-items: center; }
   h1 .bean { display: inline-block; width: 10px; height: 14px; background: var(--accent); border-radius: 50%/40%; margin-right: 8px; box-shadow: inset -2px 0 0 rgba(0,0,0,.3); }
-  .sub { color: var(--muted); font-size: 12.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .phases { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: var(--panel-2); }
+  .phases button { all: unset; cursor: pointer; padding: 7px 18px; border-radius: 999px; font-size: 14px; color: var(--muted); transition: background-color .15s, color .15s; }
+  .phases button:hover { color: var(--text); }
+  .phases button[aria-selected="true"] { background: var(--panel); color: var(--text); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
   .spacer { flex: 1; }
   .iconbtn { all: unset; cursor: pointer; flex: none; width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: var(--muted); transition: background-color .15s, color .15s; }
   .iconbtn:hover { color: var(--text); background: var(--accent-soft); }
-  .iconbtn:focus-visible, .cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-  /* the switch shows the theme it switches TO: moon on light, sun on dark */
+  .iconbtn:focus-visible, .cta:focus-visible, .phases button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .ico-sun { display: none; }
   @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ico-sun { display: block; } :root:not([data-theme="light"]) .ico-moon { display: none; } }
   :root[data-theme="dark"] .ico-sun { display: block; } :root[data-theme="dark"] .ico-moon { display: none; }
   .cta {
-    flex: none; cursor: pointer; border: 0; font: inherit; font-size: 14px; font-weight: 600; line-height: 1;
-    background: var(--accent); color: var(--cta-text); padding: 10px 18px; border-radius: 999px; white-space: nowrap;
+    flex: none; cursor: pointer; border: 0; font-size: 14px; font-weight: 600; line-height: 1;
+    background: var(--accent); color: var(--cta-text); padding: 11px 18px; border-radius: 999px; white-space: nowrap;
     transition: background-color .15s, box-shadow .15s;
   }
-  .cta:hover { background: var(--accent-hi); box-shadow: 0 0 0 4px var(--accent-soft), 0 6px 20px -6px var(--accent); }
+  .cta:hover { background: var(--accent-hi); box-shadow: 0 0 0 4px var(--accent-soft); }
   .cta .short { display: none; }
-  @media (max-width: 760px) { .sub { display: none; } }
-  @media (max-width: 420px) { .cta .long { display: none; } .cta .short { display: inline; } .topbar .bar-in { gap: 8px; } }
 
-  .wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 4px 18px 0; flex: 1 0 auto; display: flex; flex-direction: column; }
+  /* Two panes: the cup (the answer) and the current phase */
+  .main { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(320px, 400px) minmax(0, 1fr); gap: 14px; padding: 4px 18px 0; }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; min-height: 0; position: relative; }
 
-  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0; }
-  .card h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
-
-  .layout { display: grid; grid-template-columns: 240px 280px 1fr; gap: 12px; align-items: stretch; }
-  @media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr); } }
-
-  .families { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
-  .fam-btn {
-    cursor: pointer; border: 1px solid var(--line); background: var(--panel-2);
-    color: var(--muted); padding: 3px 8px; border-radius: 999px; font-size: 11px;
-    transition: all .15s;
+  /* cup pane */
+  .cupside { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 18px; }
+  .verdict { text-align: center; min-height: 64px; display: flex; flex-direction: column; justify-content: center; }
+  .verdict .lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+  .verdict .nm { font-size: 26px; font-weight: 700; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
+  .verdict.idle .nm { color: var(--muted); font-size: 18px; font-weight: 500; }
+  .verdict .away { font-size: 13px; color: var(--muted); }
+  .info { all: unset; cursor: pointer; width: 22px; height: 22px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 13px; color: var(--muted); background: var(--panel-2); }
+  .info:hover, .info[aria-expanded="true"] { color: var(--text); background: var(--accent-soft); }
+  .note {
+    position: absolute; left: 14px; right: 14px; top: 92px; z-index: 5;
+    background: var(--bar); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+    border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; font-size: 13.5px; box-shadow: 0 10px 30px rgba(0,0,0,.18);
   }
-  .fam-btn.active, .fam-btn:hover { color: var(--text); border-color: var(--accent); background: var(--panel); }
+  .note b { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+  .note[hidden] { display: none; }
+  .empty-btn { position: absolute; top: 12px; right: 12px; }
 
-  .drinks { display: flex; flex-direction: column; gap: 3px; }
-  .drink {
-    cursor: pointer; border: 1px solid var(--line); background: var(--panel-2);
-    color: var(--text); padding: 5px 9px; border-radius: 8px; text-align: left;
-    transition: all .15s;
-    font: inherit;
-    display: flex; align-items: baseline; gap: 8px; overflow: hidden;
-  }
-  .drink:hover { background: var(--card-hover); }
-  .drink.active { border-color: var(--accent-2); background: var(--panel); box-shadow: 0 0 0 1px var(--accent-2); }
-  .drink .name { font-weight: 600; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
-  .drink .ings { color: var(--muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .chips { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; min-height: 30px; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 11px 0 7px; border-radius: 999px; background: var(--panel-2); font-size: 13px; white-space: nowrap; }
+  .chip .sw { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); }
+  .chip .n { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .near { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; }
+  .near button { all: unset; cursor: pointer; display: inline-flex; gap: 6px; align-items: center; height: 30px; padding: 0 12px; border-radius: 999px; font-size: 13px; background: var(--accent-soft); color: var(--text); }
+  .near button:hover { background: var(--card-hover); }
+  .near button .d { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; }
 
-  /* Center column: cup viz + notes below */
-  .viz {
-    display: flex; flex-direction: column; align-items: center;
-    padding: 8px 10px 10px;
+  /* phase pane */
+  .phase { display: none; height: 100%; flex-direction: column; gap: 14px; padding: 16px 18px; }
+  .phase.on { display: flex; }
+  .pills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .pill { all: unset; cursor: pointer; height: 32px; padding: 0 14px; display: inline-flex; align-items: center; gap: 7px; border-radius: 999px; font-size: 13.5px; color: var(--muted); background: var(--panel-2); white-space: nowrap; transition: background-color .15s, color .15s; }
+  .pill:hover { color: var(--text); }
+  .pill.on { color: var(--text); background: var(--accent-soft); font-weight: 600; }
+  .pill .num { width: 20px; height: 20px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--panel); color: var(--accent); }
+  .pill.has .num { background: var(--accent); color: var(--cta-text); }
+
+  /* famous coffees: tiles with a mini glass, paged (rule 36) */
+  .tiles { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); grid-auto-rows: 74px; gap: 10px; align-content: start; overflow: hidden; }
+  .tile { all: unset; cursor: pointer; display: flex; align-items: center; gap: 12px; padding: 0 14px; border-radius: 12px; background: var(--panel-2); transition: background-color .15s; min-width: 0; }
+  .tile:hover { background: var(--card-hover); }
+  .tile.on { background: var(--accent-soft); box-shadow: inset 0 0 0 2px var(--accent); }
+  .tile.off { display: none; }
+  .tile .nm { font-size: 14.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .glass { flex: none; width: 30px; height: 40px; border-radius: 4px 4px 10px 10px; overflow: hidden; display: flex; flex-direction: column-reverse; background: var(--panel); box-shadow: inset 0 0 0 1.5px var(--line); padding: 2px; }
+  .glass i { display: block; width: 100%; }
+  .glass i:first-child { border-radius: 0 0 8px 8px; }
+  .pager { display: flex; justify-content: center; gap: 8px; min-height: 10px; }
+  .pager button { all: unset; cursor: pointer; width: 9px; height: 9px; border-radius: 50%; background: var(--line); }
+  .pager button.on { background: var(--accent); }
+
+  /* build: one stage at a time, big ingredient tiles */
+  .ings { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); grid-auto-rows: minmax(84px, 112px); gap: 12px; align-content: center; }
+  .ing { display: flex; align-items: center; gap: 12px; padding: 0 12px 0 14px; border-radius: 14px; background: var(--panel-2); transition: background-color .15s; }
+  .ing.has { background: var(--accent-soft); }
+  .ing .sw { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); box-shadow: inset 0 -4px 8px rgba(0,0,0,.15); }
+  .ing .nm { flex: 1; min-width: 0; font-size: 15.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .qty { display: flex; align-items: center; gap: 4px; flex: none; }
+  .qty button { all: unset; cursor: pointer; width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; background: var(--panel); color: var(--text); transition: background-color .15s; }
+  .qty button:hover { background: var(--card-hover); }
+  .qty button.plus { color: var(--accent); }
+  .qty .n { min-width: 22px; text-align: center; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .qty .n.zero { color: var(--muted); font-weight: 400; }
+  .stepnav { display: flex; justify-content: space-between; }
+  .stepnav .pill { background: transparent; }
+  .stepnav .pill:hover { background: var(--panel-2); }
+  .stepnav .pill[disabled] { visibility: hidden; }
+
+  /* one-line shared network footer */
+  #scn-footer { flex: none; min-height: 34px; }
+
+  @media (max-width: 899px) {
+    .main { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 10px; padding: 0 10px; }
+    .bar-in { padding: 0 12px; gap: 8px; }
+    .cupside { flex-direction: row; flex-wrap: wrap; gap: 6px 10px; padding: 10px; }
+    .cupside .scene { transform: scale(.42); transform-origin: center; margin: -88px -76px; }
+    .verdict { flex: 1; min-height: 0; text-align: left; }
+    .verdict .nm { justify-content: flex-start; font-size: 21px; }
+    .cupside .chips, .cupside .near { flex-basis: 100%; }
+    .note { top: 70px; }
+    .phase { padding: 12px; gap: 10px; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: 58px; gap: 8px; }
+    .ings { grid-template-columns: minmax(0, 1fr); grid-auto-rows: 52px; gap: 7px; align-content: start; }
+    .stepnav { display: none; }
+    .steps { flex-wrap: nowrap; justify-content: space-between; gap: 4px; }
+    .steps .pill { padding: 0 7px; }
+    .empty-btn { top: 6px; right: auto; left: 6px; }
+    .ing .sw { width: 28px; height: 28px; }
+    .pill { height: 30px; padding: 0 11px; font-size: 13px; }
+    .steps .pill .t { display: none; }
+    .steps .pill.on .t { display: inline; }
   }
+  @media (max-width: 520px) {
+    h1 .word { display: none; }
+    .phases button { padding: 7px 12px; }
+    .cta .long { display: none; } .cta .short { display: inline; }
+    .cta { padding: 10px 14px; }
+  }
+  /* ---------- the cup ---------- */
   .scene {
     position: relative;
     width: 260px; height: 300px;
@@ -284,213 +349,63 @@
     30% { opacity: .7; }
     100% { transform: translateY(-40px) scale(1.2); opacity: 0; }
   }
-
-  .match-banner {
-    margin-bottom: 6px;
-    padding: 8px 12px;
-    width: 100%;
-    background: linear-gradient(90deg, rgba(212,165,116,.18), rgba(201,122,60,.18));
-    border: 1px solid var(--accent);
-    border-radius: 10px;
-    text-align: center;
-    min-height: 36px;
-    display: flex; align-items: center; justify-content: center;
-    transition: all .25s ease;
-  }
-  .match-banner.empty {
-    background: transparent;
-    border-color: var(--line);
-    color: var(--muted);
-  }
-  .match-banner .made {
-    font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; margin-right: 6px;
-  }
-  .match-banner .drink-name {
-    font-size: 16px; font-weight: 700; color: var(--accent);
-  }
-  .match-banner .hint { font-size: 12px; }
-
-  /* Notes panel below the cup */
-  .notes {
-    margin-top: 10px;
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    border-radius: 10px;
-    font-size: 12px;
-    color: var(--muted);
-    line-height: 1.55;
-    flex-grow: 1;
-  }
-  .notes .note-title {
-    color: var(--accent);
-    font-weight: 600;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: .12em;
-    margin-bottom: 4px;
-  }
-  .notes .note-body { color: var(--text); font-size: 13px; line-height: 1.5; }
-  .notes .recipe-table { margin-top: 8px; display: flex; flex-direction: column; gap: 3px; }
-  .notes .recipe-row { display: flex; justify-content: space-between; gap: 8px; font-size: 11px; }
-  .notes .recipe-row .ing { color: var(--text); }
-  .notes .recipe-row .amt { color: var(--muted); font-variant-numeric: tabular-nums; }
-  .notes .closest-row { display: flex; align-items: center; gap: 6px; font-size: 11px; margin-top: 2px; }
-  .notes .closest-pill {
-    display: inline-flex; align-items: center; gap: 4px;
-    background: var(--panel); border: 1px solid var(--line);
-    padding: 2px 8px; border-radius: 999px; color: var(--text);
-    font-size: 11px;
-  }
-  .notes .closest-pill .delta { color: var(--accent); font-weight: 600; }
-
-  /* Stages — the build column */
-  .stages-card { display: flex; flex-direction: column; }
-  .stages-head {
-    display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
-    margin-bottom: 6px;
-  }
-  .stages-head h2 { margin: 0; }
-  .stages-head .clear-link {
-    cursor: pointer; background: transparent; border: 0;
-    color: var(--muted); font-size: 11px; padding: 2px 4px;
-    text-decoration: underline; text-decoration-color: var(--line);
-    font: inherit; font-size: 11px;
-  }
-  .stages-head .clear-link:hover { color: var(--accent); text-decoration-color: var(--accent); }
-
-  .stages-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 14px;
-    align-content: start;
-  }
-  .stage { display: flex; flex-direction: column; gap: 4px; }
-  .stage-head {
-    display: flex; align-items: baseline; gap: 6px; padding-bottom: 2px;
-    margin-bottom: 2px;
-  }
-  .stage-head .stage-num {
-    width: 18px; height: 18px; border-radius: 50%;
-    background: var(--panel-2);
-    border: 1px solid var(--line);
-    color: var(--accent);
-    font-size: 10px; font-weight: 700;
-    display: inline-flex; align-items: center; justify-content: center;
-    line-height: 1;
-  }
-  .stage-head h3 { margin: 0; font-size: 12px; font-weight: 600; color: var(--text); }
-  .stage-head .stage-hint { font-size: 10px; color: var(--muted); margin-left: auto; }
-
-  .ings-list { display: flex; flex-direction: column; gap: 3px; }
-  .ing-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 4px 8px;
-    background: var(--panel-2); border: 1px solid var(--line);
-    border-radius: 8px;
-  }
-  .ing-row.has { border-color: var(--accent); }
-  .ing-meta { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; }
-  .swatch { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.3); flex-shrink: 0; }
-  .ing-name { font-size: 12px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .ing-controls { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-  .btn {
-    cursor: pointer; user-select: none;
-    background: var(--panel); color: var(--text);
-    border: 1px solid var(--line); border-radius: 6px;
-    width: 22px; height: 22px;
-    font-size: 14px; line-height: 1;
-    display: inline-flex; align-items: center; justify-content: center;
-    transition: all .12s;
-  }
-  .btn:hover { border-color: var(--accent); }
-  .btn:active { transform: scale(.95); }
-  .btn.plus { color: var(--accent); }
-  .btn.minus { color: var(--muted); }
-  .ing-amount {
-    min-width: 18px; text-align: center; font-variant-numeric: tabular-nums;
-    color: var(--text); font-weight: 600; font-size: 12px;
-  }
-  .ing-amount.zero { color: var(--muted); font-weight: 400; }
-
-  /* rule 18: footer is one short line */
-  .footer { flex: none; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 14px; padding: 10px 4px 12px; color: var(--muted); font-size: 12.5px; }
-  .footer a { color: var(--muted); text-decoration: none; }
-  .footer a:hover { color: var(--accent); }
-
-  /* rule 33: on laptops the tool fits the screen; long lists scroll inside their own panel */
-  @media (min-width: 981px) and (min-height: 600px) {
-    body { overflow-y: hidden; }
-    .wrap { flex: 1 1 0; min-height: 0; }
-    .layout { flex: 1 1 0; min-height: 0; grid-template-rows: minmax(0, 1fr); }
-    .layout > .card { min-height: 0; }
-    .drinks-card { display: flex; flex-direction: column; }
-    .drinks-card .drinks { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; scrollbar-width: thin; }
-    .viz { overflow-y: auto; scrollbar-width: thin; }
-    .stages-card .stages-grid { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
-  }
-  @media (max-width: 980px) {
-    .stages-grid { grid-template-columns: 1fr; }
-    .scene { transform: scale(.92); transform-origin: bottom center; }
-    .viz { order: -1; }   /* answer first: the cup and its verdict lead on phones */
-  }
 </style>
 </head>
 <body>
 <header class="topbar">
   <div class="bar-in">
-    <h1><span class="bean"></span>Coffee Lab</h1>
-    <div class="sub">Pick a coffee, or build one, and watch which famous drink you just made.</div>
+    <h1><span class="bean"></span><span class="word">Coffee Lab</span></h1>
+    <nav class="phases" role="tablist" aria-label="Mode">
+      <button role="tab" data-phase="pick" aria-selected="true">Pick</button>
+      <button role="tab" data-phase="build" aria-selected="false">Build</button>
+    </nav>
     <div class="spacer"></div>
     <button class="iconbtn" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme"><svg class="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
-    <button class="cta" id="randomBtn" type="button"><span class="long">Pour a random coffee</span><span class="short">Random coffee</span></button>
+    <button class="cta" id="randomBtn" type="button"><span class="long">Pour a random coffee</span><span class="short">Random</span></button>
   </div>
 </header>
-<div class="wrap">
 
-  <div class="layout">
-    <div class="card drinks-card">
-      <h2>Famous coffees</h2>
-      <div class="families" id="families"></div>
-      <div class="drinks" id="drinks"></div>
-    </div>
-
-    <div class="card viz">
-      <div class="match-banner empty" id="matchBanner" aria-live="polite">
-        <span class="hint">Add ingredients to start brewing</span>
-      </div>
-      <div class="scene">
-        <div class="cup-wrap">
-          <div class="steam" id="steam">
-            <span></span><span></span><span></span>
-          </div>
-          <div class="cup-handle"></div>
-          <div class="cup">
-            <div class="cup-rim"></div>
-            <div class="liquid" id="liquid"></div>
-          </div>
+<main class="main">
+  <!-- the answer: what's in the cup -->
+  <section class="card cupside">
+    <button class="iconbtn empty-btn" id="clearBtn" type="button" aria-label="Empty the cup" title="Empty the cup"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
+    <div class="verdict idle" id="verdict" aria-live="polite"></div>
+    <div class="note" id="note" hidden></div>
+    <div class="scene">
+      <div class="cup-wrap">
+        <div class="steam" id="steam"><span></span><span></span><span></span></div>
+        <div class="cup-handle"></div>
+        <div class="cup">
+          <div class="cup-rim"></div>
+          <div class="liquid" id="liquid"></div>
         </div>
-        <div class="saucer"></div>
       </div>
-      <div class="notes" id="notes"></div>
+      <div class="saucer"></div>
     </div>
+    <div class="chips" id="recipe"></div>
+    <div class="near" id="near"></div>
+  </section>
 
-    <div class="card stages-card">
-      <div class="stages-head">
-        <h2>Build your drink</h2>
-        <button class="clear-link" id="clearBtn">empty the cup</button>
+  <!-- the current phase -->
+  <section class="card">
+    <div class="phase on" data-phase="pick">
+      <div class="pills" id="families"></div>
+      <div class="tiles" id="drinks"></div>
+      <div class="pager" id="pager"></div>
+    </div>
+    <div class="phase" data-phase="build">
+      <div class="pills steps" id="steps"></div>
+      <div class="ings" id="ings"></div>
+      <div class="stepnav">
+        <button class="pill" id="prevStep" type="button"></button>
+        <button class="pill" id="nextStep" type="button"></button>
       </div>
-      <div class="stages-grid" id="stages"></div>
     </div>
-  </div>
+  </section>
+</main>
 
-</div>
-<footer class="footer">
-  <span>Coffee Lab · a small visual coffee lab</span>
-  <a href="https://sankhacooray.com">sankhacooray.com</a>
-  <a href="https://github.com/sankhacooray/coffeelab-sankhacooray-com">Source</a>
-</footer>
+<div id="scn-footer"></div>
+<script async src="https://cdn.sankhacooray.com/js/sankha-footer.js" data-site="coffeelab.sankhacooray.com" data-tagline="a small visual coffee lab"></script>
 
 <script>
 /* ============================================================
@@ -625,106 +540,112 @@ function closestDrinks(n = 3) {
 }
 
 /* ============================================================
-   RENDER — families + drinks
+   UI STATE — one phase and one build step on screen at a time
    ============================================================ */
-function renderFamilies() {
-  const families = ["All", ...Array.from(new Set(COFFEES.map(c => c.family)))];
-  const root = document.getElementById("families");
-  root.innerHTML = "";
-  for (const fam of families) {
-    const b = document.createElement("button");
-    b.className = "fam-btn" + (fam === state.activeFamily ? " active" : "");
-    b.textContent = fam;
-    b.onclick = () => { state.activeFamily = fam; renderFamilies(); renderDrinks(); };
-    root.appendChild(b);
-  }
-}
+const ui = { phase: "pick", step: 0, page: 0, noteOpen: false };
+const $ = id => document.getElementById(id);
+const stagesInUse = STAGES.filter(s => Object.values(INGREDIENTS).some(i => i.stage === s.id));
+const byDensity = entries => entries.sort((a, b) => INGREDIENTS[a[0]].density - INGREDIENTS[b[0]].density);
 
-function renderDrinks() {
-  const root = document.getElementById("drinks");
-  root.innerHTML = "";
-  const list = state.activeFamily === "All"
-    ? COFFEES
-    : COFFEES.filter(c => c.family === state.activeFamily);
-  const currentMatch = findMatch();
-  for (const c of list) {
-    const b = document.createElement("button");
-    b.className = "drink" + (currentMatch && currentMatch.id === c.id ? " active" : "");
-    b.innerHTML = `<div class="name">${c.name}</div><div class="ings">${recipeInline(c.recipe)}</div>`;
-    b.onclick = () => { state.cup = { ...c.recipe }; render(); };
-    root.appendChild(b);
-  }
+const shortName = id => { const n = INGREDIENTS[id].name; return n.length <= 12 ? n : n.split(" ")[0]; };
+
+/* a recipe drawn as stacked colour bands in a small glass */
+function glass(recipe) {
+  const entries = byDensity(Object.entries(recipe));
+  const total = entries.reduce((s, [, n]) => s + n, 0);
+  return `<span class="glass" aria-hidden="true">${entries.map(([id, n]) =>
+    `<i style="height:${(n / total) * 100}%;background:${INGREDIENTS[id].color}"></i>`).join("")}</span>`;
 }
 
 /* ============================================================
-   RENDER — stages (build your drink)
+   PICK — family pills + drink tiles, paged to fit (no scrolling)
    ============================================================ */
-function renderStages() {
-  const root = document.getElementById("stages");
-  root.innerHTML = "";
-  STAGES.forEach((stage, idx) => {
-    const ingIds = Object.keys(INGREDIENTS).filter(id => INGREDIENTS[id].stage === stage.id);
-    if (ingIds.length === 0) return;
-    const sec = document.createElement("section");
-    sec.className = "stage";
-    sec.innerHTML = `
-      <div class="stage-head">
-        <span class="stage-num">${idx + 1}</span>
-        <h3>${stage.title}</h3>
-        <span class="stage-hint">${stage.hint}</span>
-      </div>
-      <div class="ings-list">
-        ${ingIds.map(id => {
-          const ing = INGREDIENTS[id];
-          const parts = state.cup[id] || 0;
-          return `
-            <div class="ing-row${parts > 0 ? " has" : ""}">
-              <div class="ing-meta">
-                <div class="swatch" style="background:${ing.color}"></div>
-                <div class="ing-name">${ing.name}</div>
-              </div>
-              <div class="ing-controls">
-                <button class="btn minus" data-id="${id}" data-delta="-1">−</button>
-                <div class="ing-amount${parts === 0 ? " zero" : ""}">${parts}</div>
-                <button class="btn plus" data-id="${id}" data-delta="1">+</button>
-              </div>
-            </div>
-          `;
-        }).join("")}
-      </div>
-    `;
-    root.appendChild(sec);
-  });
-  root.onclick = (e) => {
-    const btn = e.target.closest("button[data-id]");
-    if (!btn) return;
-    const id = btn.dataset.id;
-    const delta = parseInt(btn.dataset.delta, 10);
-    const next = (state.cup[id] || 0) + delta;
-    if (next <= 0) delete state.cup[id];
-    else state.cup[id] = Math.min(next, 9);
-    render();
+function renderFamilies() {
+  const families = ["All", ...new Set(COFFEES.map(c => c.family))];
+  const root = $("families");
+  root.innerHTML = families.map(f =>
+    `<button class="pill${f === state.activeFamily ? " on" : ""}" data-fam="${f}">${f}</button>`).join("");
+  root.onclick = e => {
+    const b = e.target.closest("[data-fam]"); if (!b) return;
+    state.activeFamily = b.dataset.fam; ui.page = 0; renderFamilies(); renderDrinks();
   };
 }
 
+function renderDrinks() {
+  const root = $("drinks");
+  const list = state.activeFamily === "All" ? COFFEES : COFFEES.filter(c => c.family === state.activeFamily);
+  const match = findMatch();
+  root.innerHTML = list.map(c =>
+    `<button class="tile${match && match.id === c.id ? " on" : ""}" data-id="${c.id}" title="${c.name}">${glass(c.recipe)}<span class="nm">${c.name}</span></button>`).join("");
+  root.onclick = e => {
+    const t = e.target.closest("[data-id]"); if (!t) return;
+    state.cup = { ...COFFEES.find(c => c.id === t.dataset.id).recipe }; ui.noteOpen = false; render();
+  };
+  paginate();
+}
+
+function paginate() {
+  const root = $("drinks"), tiles = [...root.children], pager = $("pager");
+  tiles.forEach(t => t.classList.remove("off"));
+  pager.innerHTML = "";
+  if (!tiles.length || !root.offsetParent) return;
+  const cs = getComputedStyle(root);
+  const cols = cs.gridTemplateColumns.split(" ").length;
+  const rowH = tiles[0].getBoundingClientRect().height, gap = parseFloat(cs.rowGap) || 0;
+  const rows = Math.max(1, Math.floor((root.clientHeight + gap) / (rowH + gap)));
+  const per = cols * rows, pages = Math.ceil(tiles.length / per);
+  ui.page = Math.min(ui.page, pages - 1);
+  tiles.forEach((t, i) => t.classList.toggle("off", Math.floor(i / per) !== ui.page));
+  if (pages > 1) pager.innerHTML = Array.from({ length: pages }, (_, i) =>
+    `<button class="${i === ui.page ? "on" : ""}" data-page="${i}" aria-label="Page ${i + 1}"></button>`).join("");
+}
+$("pager").onclick = e => { const b = e.target.closest("[data-page]"); if (b) { ui.page = +b.dataset.page; paginate(); } };
+function turnPage(d) {
+  const pages = $("pager").children.length || 1;
+  const p = ui.page + d; if (p < 0 || p >= pages) return; ui.page = p; paginate();
+}
+
 /* ============================================================
-   RENDER — liquid (the cup contents)
+   BUILD — step pills, one stage's ingredients, back / next
+   ============================================================ */
+function stageHas(stage) { return Object.keys(state.cup).some(id => INGREDIENTS[id].stage === stage.id && state.cup[id] > 0); }
+
+function renderBuild() {
+  $("steps").innerHTML = stagesInUse.map((s, i) =>
+    `<button class="pill${i === ui.step ? " on" : ""}${stageHas(s) ? " has" : ""}" data-step="${i}"><span class="num">${i + 1}</span><span class="t">${s.title}</span></button>`).join("");
+  const stage = stagesInUse[ui.step];
+  const ids = Object.keys(INGREDIENTS).filter(id => INGREDIENTS[id].stage === stage.id);
+  $("ings").innerHTML = ids.map(id => {
+    const ing = INGREDIENTS[id], n = state.cup[id] || 0;
+    return `<div class="ing${n ? " has" : ""}"><span class="sw" style="background:${ing.color}"></span><span class="nm">${ing.name}</span>
+      <span class="qty"><button class="minus" data-id="${id}" data-delta="-1" aria-label="Less ${ing.name}">−</button><span class="n${n ? "" : " zero"}">${n}</span><button class="plus" data-id="${id}" data-delta="1" aria-label="More ${ing.name}">+</button></span></div>`;
+  }).join("");
+  const prev = stagesInUse[ui.step - 1], next = stagesInUse[ui.step + 1];
+  $("prevStep").disabled = !prev; $("prevStep").textContent = prev ? prev.title : "";
+  $("nextStep").disabled = !next; $("nextStep").textContent = next ? next.title : "";
+}
+$("steps").onclick = e => { const b = e.target.closest("[data-step]"); if (b) { ui.step = +b.dataset.step; renderBuild(); } };
+$("prevStep").onclick = () => goStep(-1);
+$("nextStep").onclick = () => goStep(1);
+function goStep(d) { const s = ui.step + d; if (s < 0 || s >= stagesInUse.length) return; ui.step = s; renderBuild(); }
+$("ings").onclick = e => {
+  const btn = e.target.closest("button[data-id]"); if (!btn) return;
+  const id = btn.dataset.id, next = (state.cup[id] || 0) + parseInt(btn.dataset.delta, 10);
+  if (next <= 0) delete state.cup[id]; else state.cup[id] = Math.min(next, 9);
+  ui.noteOpen = false; render();
+};
+
+/* ============================================================
+   CUP — liquid, verdict, recipe chips, nearest drinks
    ============================================================ */
 function renderLiquid() {
-  const liquid = document.getElementById("liquid");
+  const liquid = $("liquid");
   liquid.innerHTML = "";
   const entries = Object.entries(state.cup).filter(([, n]) => n > 0);
   const total = entries.reduce((s, [, n]) => s + n, 0);
-  if (total === 0) {
-    liquid.style.height = "0";
-    document.getElementById("steam").style.opacity = "0";
-    return;
-  }
-  entries.sort((a, b) => INGREDIENTS[a[0]].density - INGREDIENTS[b[0]].density);
-
-  const fillFraction = Math.min(total / CAPACITY, 1);
-  liquid.style.height = (fillFraction * 100) + "%";
-
+  if (total === 0) { liquid.style.height = "0"; $("steam").style.opacity = "0"; return; }
+  byDensity(entries);
+  liquid.style.height = (Math.min(total / CAPACITY, 1) * 100) + "%";
   for (const [id, parts] of entries) {
     const ing = INGREDIENTS[id];
     const layer = document.createElement("div");
@@ -733,93 +654,93 @@ function renderLiquid() {
     if (!ing.klass) layer.style.background = ing.color;
     liquid.appendChild(layer);
   }
-
   const hasHot = ["espresso","ristretto","steamed_milk","hot_water","whisky"].some(k => state.cup[k]);
   const hasCold = ["ice","cold_milk","cold_water","cold_brew"].some(k => state.cup[k]);
-  document.getElementById("steam").style.opacity = (hasHot && !hasCold) ? ".5" : "0";
+  $("steam").style.opacity = (hasHot && !hasCold) ? ".5" : "0";
 }
+
+function renderCupInfo() {
+  const match = findMatch(), total = totalParts(), v = $("verdict"), note = $("note");
+  if (match) {
+    v.className = "verdict";
+    v.innerHTML = `<span class="lbl">You made</span><span class="nm">${match.name}<button class="info" id="infoBtn" aria-expanded="${ui.noteOpen}" aria-label="About ${match.name}">i</button></span>`;
+    note.innerHTML = `<b>${match.family}</b>${match.notes}`;
+  } else if (total === 0) {
+    v.className = "verdict idle";
+    v.innerHTML = `<span class="nm">Empty cup</span>`;
+  } else {
+    const { c, dist } = closestDrinks(1)[0];
+    v.className = "verdict";
+    v.innerHTML = `<span class="lbl">Closest</span><span class="nm">${c.name}</span><span class="away">${dist} step${dist === 1 ? "" : "s"} away</span>`;
+  }
+  note.hidden = !(match && ui.noteOpen);
+  const info = $("infoBtn");
+  if (info) info.onclick = () => { ui.noteOpen = !ui.noteOpen; renderCupInfo(); };
+
+  const entries = byDensity(Object.entries(state.cup).filter(([, n]) => n > 0)).reverse();
+  $("recipe").innerHTML = entries.map(([id, n]) =>
+    `<span class="chip" title="${INGREDIENTS[id].name} · ${n * 30} ml"><span class="sw" style="background:${INGREDIENTS[id].color}"></span>${shortName(id)}<span class="n">×${n}</span></span>`).join("");
+
+  // in progress: tap a near drink to pour it
+  $("near").innerHTML = (!match && total) ? closestDrinks(3).map(({ c, dist }) =>
+    `<button data-id="${c.id}">${c.name}<span class="d">${dist}</span></button>`).join("") : "";
+}
+$("near").onclick = e => {
+  const b = e.target.closest("[data-id]"); if (!b) return;
+  state.cup = { ...COFFEES.find(c => c.id === b.dataset.id).recipe }; render();
+};
 
 /* ============================================================
-   RENDER — match banner + notes panel
+   PHASES + RENDER
    ============================================================ */
-function renderBanner() {
-  const banner = document.getElementById("matchBanner");
-  const match = findMatch();
-  const total = totalParts();
-  if (match) {
-    banner.className = "match-banner";
-    banner.innerHTML = `<span class="made">You just made</span><span class="drink-name">${match.name}</span>`;
-  } else if (total === 0) {
-    banner.className = "match-banner empty";
-    banner.innerHTML = `<span class="hint">Add ingredients to start brewing</span>`;
-  } else {
-    const closest = closestDrinks(1)[0];
-    banner.className = "match-banner empty";
-    banner.innerHTML = `<span class="hint">In progress — ${closest.dist} step${closest.dist === 1 ? "" : "s"} from a ${closest.c.name}</span>`;
-  }
+function setPhase(p) {
+  ui.phase = p;
+  document.querySelectorAll(".phases [data-phase]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.phase === p)));
+  document.querySelectorAll(".phase").forEach(el => el.classList.toggle("on", el.dataset.phase === p));
+  if (p === "pick") paginate(); else renderBuild();
 }
-
-function renderNotes() {
-  const root = document.getElementById("notes");
-  const match = findMatch();
-  const total = totalParts();
-  if (match) {
-    const recipeRows = Object.entries(match.recipe).map(([id, parts]) =>
-      `<div class="recipe-row"><span class="ing">${INGREDIENTS[id].name}</span><span class="amt">${parts}× &middot; ${parts * 30} ml</span></div>`
-    ).join("");
-    root.innerHTML = `
-      <div class="note-title">${match.family}</div>
-      <div class="note-body">${match.notes}</div>
-      <div class="recipe-table">${recipeRows}</div>
-    `;
-    return;
-  }
-  if (total === 0) {
-    root.innerHTML = `
-      <div class="note-title">How to use</div>
-      <div class="note-body">Pick a famous coffee on the left, or build one yourself by stepping through <strong>Base → Milk → Sweetener → Toppings</strong> on the right. The cup pours itself as you go.</div>
-    `;
-    return;
-  }
-  // In-progress: show what's currently in the cup + closest matches
-  const cupEntries = Object.entries(state.cup).filter(([, n]) => n > 0);
-  cupEntries.sort((a, b) => INGREDIENTS[a[0]].density - INGREDIENTS[b[0]].density);
-  const cupRows = cupEntries.map(([id, parts]) =>
-    `<div class="recipe-row"><span class="ing">${INGREDIENTS[id].name}</span><span class="amt">${parts}× &middot; ${parts * 30} ml</span></div>`
-  ).join("");
-  const closest = closestDrinks(3);
-  const pills = closest.map(({ c, dist }) =>
-    `<span class="closest-pill">${c.name} <span class="delta">${dist} step${dist === 1 ? "" : "s"}</span></span>`
-  ).join("");
-  root.innerHTML = `
-    <div class="note-title">Your cup &middot; ${total * 30} ml</div>
-    <div class="recipe-table">${cupRows}</div>
-    <div class="closest-row" style="margin-top:8px; flex-wrap: wrap;">${pills}</div>
-  `;
-}
+document.querySelector(".phases").onclick = e => { const b = e.target.closest("[data-phase]"); if (b) setPhase(b.dataset.phase); };
 
 function render() {
   renderDrinks();
-  renderStages();
+  renderBuild();
   renderLiquid();
-  renderBanner();
-  renderNotes();
+  renderCupInfo();
 }
 
-document.getElementById("clearBtn").onclick = () => { state.cup = {}; render(); };
+$("clearBtn").onclick = () => { state.cup = {}; ui.noteOpen = false; render(); };
 
 /* App-bar CTA: pour a random famous coffee (never the one already in the cup) */
-document.getElementById("randomBtn").onclick = () => {
+$("randomBtn").onclick = () => {
   const current = findMatch();
   const pool = COFFEES.filter(c => !current || c.id !== current.id);
   const pick = pool[Math.floor(Math.random() * pool.length)];
-  state.cup = { ...pick.recipe };
-  if (state.activeFamily !== "All" && state.activeFamily !== pick.family) { state.activeFamily = pick.family; renderFamilies(); }
+  state.cup = { ...pick.recipe }; ui.noteOpen = false;
+  if (state.activeFamily !== "All" && state.activeFamily !== pick.family) { state.activeFamily = pick.family; ui.page = 0; renderFamilies(); }
   render();
-  const active = document.querySelector(".drink.active");
-  if (window.matchMedia("(min-width: 981px)").matches) { if (active) active.scrollIntoView({ block: "nearest" }); }
-  else document.body.scrollTo({ top: 0, behavior: "smooth" });
+  const tile = document.querySelector(`.tile[data-id="${pick.id}"]`);
+  if (tile && tile.classList.contains("off")) { // jump to the page that shows it
+    const idx = [...$("drinks").children].indexOf(tile), per = [...$("drinks").children].filter(t => !t.classList.contains("off")).length;
+    ui.page = Math.floor(idx / per); paginate();
+  }
 };
+
+/* keys: ↑/↓ turn pages (Pick) · ←/→ move between steps (Build) · Esc closes the note */
+document.addEventListener("keydown", e => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "Escape" && ui.noteOpen) { ui.noteOpen = false; renderCupInfo(); return; }
+  if (ui.phase === "pick" && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); turnPage(1); }
+  else if (ui.phase === "pick" && (e.key === "ArrowUp" || e.key === "PageUp")) { e.preventDefault(); turnPage(-1); }
+  else if (ui.phase === "build" && e.key === "ArrowRight") goStep(1);
+  else if (ui.phase === "build" && e.key === "ArrowLeft") goStep(-1);
+});
+let wheelLock = 0;
+$("drinks").addEventListener("wheel", e => {
+  e.preventDefault();
+  if (Math.abs(e.deltaY) < 20 || Date.now() < wheelLock) return;
+  wheelLock = Date.now() + 500; turnPage(e.deltaY > 0 ? 1 : -1);
+}, { passive: false });
+addEventListener("resize", paginate);
 
 /* Theme switch shared with the sankhacooray.com family (sc-theme) */
 (function(){var r=document.documentElement,K="sc-theme",mq=window.matchMedia("(prefers-color-scheme: dark)");function eff(){var a=r.getAttribute("data-theme");if(a==="light"||a==="dark")return a;return mq.matches?"dark":"light"}
