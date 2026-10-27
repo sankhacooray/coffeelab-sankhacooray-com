@@ -123,6 +123,19 @@
   .kind.ing { background: var(--panel-2); color: var(--muted); }
   .res-empty { padding: 10px 12px; color: var(--muted); font-size: 13.5px; }
   .iconbtn.search-open { display: none; }
+  /* settings: a floating panel under the gear */
+  .settings { position: absolute; top: calc(56px + env(safe-area-inset-top)); right: 18px; width: 320px; z-index: 35; padding: 14px; border-radius: 16px; border: 1px solid var(--line);
+    background: var(--bar); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 16px 40px rgba(0,0,0,.22); display: flex; flex-direction: column; gap: 10px; }
+  .settings[hidden] { display: none; }
+  .set-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 14px; font-weight: 600; }
+  .seg { display: inline-flex; padding: 3px; gap: 2px; border-radius: 999px; background: var(--panel-2); }
+  .seg button { all: unset; cursor: pointer; min-width: 44px; text-align: center; padding: 5px 12px; border-radius: 999px; font-size: 13px; color: var(--muted); }
+  .seg button[aria-pressed="true"] { background: var(--panel); color: var(--text); font-weight: 600; box-shadow: 0 1px 4px rgba(0,0,0,.12); }
+  .seg button:focus-visible { outline: 2px solid var(--accent); }
+  .set-warn { margin: 2px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); background: rgba(201,138,18,.12); border-radius: 10px; padding: 9px 11px; }
+  .set-warn b { color: #b5780c; }
+  #setReset { align-self: flex-start; }
+  .topbar { position: relative; z-index: 30; }
   .ing.flash { box-shadow: inset 0 0 0 2px var(--accent); }
   .iconbtn { all: unset; cursor: pointer; flex: none; width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: var(--muted); transition: background-color .15s, color .15s; }
   .iconbtn:hover { color: var(--text); background: var(--accent-soft); }
@@ -370,12 +383,17 @@
   }
   @media (max-width: 520px) {
     h1 .word { display: none; }
-    .phases button { padding: 7px 10px; font-size: 13.5px; }
+    .phases button { padding: 7px 8px; font-size: 13px; }
     .phases { gap: 2px; padding: 3px; }
     .bar-in { gap: 6px; padding: 0 10px; }
-    .iconbtn { width: 34px; height: 34px; }
+    .iconbtn { width: 32px; height: 32px; }
+    .settings { right: 8px; left: 8px; width: auto; }
     .cta .long { display: none; } .cta .short { display: inline; }
-    .cta { padding: 10px 12px; }
+    .cta { padding: 10px 11px; font-size: 13px; }
+  }
+  @media (max-width: 380px) {
+    .bar-in { gap: 4px; padding: 0 8px; }
+    .phases button { padding: 7px 7px; }
   }
   @media (max-width: 400px) {
     h1 { display: none; }
@@ -527,6 +545,14 @@
       <div class="results" id="results" role="listbox" hidden></div>
     </div>
     <button class="iconbtn search-open" id="searchOpen" type="button" aria-label="Search" title="Search"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></button>
+    <button class="iconbtn" id="settingsBtn" type="button" aria-label="Settings" title="Settings" aria-expanded="false" aria-controls="settings"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+    <div class="settings" id="settings" role="dialog" aria-label="Settings" hidden>
+      <div class="set-row"><span>Temperature</span><div class="seg" data-key="temp"><button data-v="c">°C</button><button data-v="f">°F</button></div></div>
+      <div class="set-row"><span>Volume</span><div class="seg" data-key="vol"><button data-v="ml">ml</button><button data-v="oz">fl oz</button></div></div>
+      <div class="set-row"><span>Energy</span><div class="seg" data-key="energy"><button data-v="kcal">kcal</button><button data-v="kj">kJ</button></div></div>
+      <p class="set-warn"><b>⚠ Saved in this browser only.</b> These settings live in this site's local storage on this device. Clearing site data or your browser cache resets them, and other browsers or devices won't see them.</p>
+      <button class="pill" id="setReset" type="button">Reset to defaults</button>
+    </div>
     <button class="iconbtn" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme"><svg class="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
     <button class="cta" id="randomBtn" type="button"><span class="long">Pour a random coffee</span><span class="short">Random</span></button>
   </div>
@@ -795,6 +821,17 @@ const byDensity = entries => entries.sort((a, b) => INGREDIENTS[a[0]].density - 
 const shortName = id => { const n = INGREDIENTS[id].name; return n.length <= 12 ? n : n.split(" ")[0]; };
 
 /* ============================================================
+   SETTINGS — units, kept in this browser's localStorage
+   ============================================================ */
+const PREF_KEY = "coffeelab-settings", PREF_DEF = { temp: "c", vol: "ml", energy: "kcal" };
+const prefs = { ...PREF_DEF };
+try { Object.assign(prefs, JSON.parse(localStorage.getItem(PREF_KEY) || "{}")); } catch (e) {}
+const savePrefs = () => { try { localStorage.setItem(PREF_KEY, JSON.stringify(prefs)); } catch (e) {} };
+const fmtVol = ml => prefs.vol === "oz" ? `${+(ml / 29.5735).toFixed(1)} fl oz` : `${ml} ml`;
+const fmtE = k => prefs.energy === "kj" ? `${Math.round(k * 4.184)} kJ` : `${k} kcal`;
+const degC = c => prefs.temp === "f" ? Math.round(c * 9 / 5 + 32) : c;
+
+/* ============================================================
    CUPS — standard sizes; the smallest that holds the drink is used
    ============================================================ */
 const CUPS = [
@@ -840,7 +877,8 @@ function prepTemp(id, cup) {
   return { milk_foam: iced ? [4] : [60, 65], hot_water: [80, 90], cold_water: [8], cold_milk: [4], ice: [0], cold_brew: [4],
     whipped_cream: [4], ice_cream: [-12] }[id] || null;
 }
-const tFmt = r => r.length > 1 ? `${r[0]}–${r[1]} °C` : `${r[0]} °C`.replace("-", "−");
+const tFmt = r => { const u = prefs.temp === "f" ? "°F" : "°C";
+  return (r.length > 1 ? `${degC(r[0])}–${degC(r[1])} ${u}` : `${degC(r[0])} ${u}`).replace(/^-/, "−"); };
 const tCls = mid => mid >= 55 ? "hot" : mid >= 35 ? "warm" : mid >= 15 ? "" : "cold";
 const tWord = mid => mid >= 55 ? "Hot" : mid >= 35 ? "Warm" : mid >= 15 ? "Cool" : "Iced";
 function serveTemp() {
@@ -878,24 +916,24 @@ function clash(id, cupIn) {
 /* ordered steps to make what's in the cup */
 function brewSteps() {
   const cup = state.cup, iced = isIced(cup), S = [];
-  const ml = id => cup[id] * 30, name = id => INGREDIENTS[id].name.toLowerCase();
+  const ml = id => fmtVol(cup[id] * 30), name = id => INGREDIENTS[id].name.toLowerCase();
   const add = (id, text, r) => S.push({ id, text, r });
   const sweet = ["sugar", ...SYRUPS].filter(id => cup[id]);
   if (sweet.length) add(sweet[0], `Add ${sweet.map(name).join(" and ")} to the cup`);
   if (cup.ice) add("ice", "Fill the glass with ice", [0]);
   if (cup.ice_cream) add("ice_cream", "Add a scoop of vanilla ice cream", [-12]);
-  if (cup.cold_brew) add("cold_brew", `Pour ${ml("cold_brew")} ml cold brew, steeped 12–24 h`, [4]);
+  if (cup.cold_brew) add("cold_brew", `Pour ${ml("cold_brew")} cold brew, steeped 12–24 h`, [4]);
   for (const b of ["espresso", "ristretto"]) if (cup[b])
     add(b, `Pull ${cup[b]} ${b === "espresso" ? "shot" : "ristretto"}${cup[b] > 1 ? "s" : ""}, ${b === "espresso" ? "25–30" : "15–20"} s`, [90, 96]);
-  if (cup.hot_water) add("hot_water", `Add ${ml("hot_water")} ml hot water`, [80, 90]);
-  if (cup.cold_water) add("cold_water", `Add ${ml("cold_water")} ml cold water`, [8]);
+  if (cup.hot_water) add("hot_water", `Add ${ml("hot_water")} hot water`, [80, 90]);
+  if (cup.cold_water) add("cold_water", `Add ${ml("cold_water")} cold water`, [8]);
   for (const m of MILKS) if (cup[m]) {
-    if (iced || m === "cold_milk") add(m, `Pour ${ml(m)} ml ${name(m).replace("cold ", "")} cold`, [4]);
-    else add(m, `Steam ${ml(m)} ml ${name(m).replace("steamed ", "")} with the frothing wand`, prepTemp(m, cup));
+    if (iced || m === "cold_milk") add(m, `Pour ${ml(m)} ${name(m).replace("cold ", "")} cold`, [4]);
+    else add(m, `Steam ${ml(m)} ${name(m).replace("steamed ", "")} with the frothing wand`, prepTemp(m, cup));
   }
   if (cup.milk_foam) iced ? add("milk_foam", "Whip cold foam and spoon it on top", [4])
                           : add("milk_foam", "Froth milk until airy, spoon the foam on top", [60, 65]);
-  if (cup.whisky) add("whisky", `Stir in ${ml("whisky")} ml Irish whiskey`);
+  if (cup.whisky) add("whisky", `Stir in ${ml("whisky")} Irish whiskey`);
   if (cup.whipped_cream) add("whipped_cream", "Float whipped cream on top", [4]);
   if (cup.cocoa) add("cocoa", "Dust with cocoa");
   return S;
@@ -1007,7 +1045,7 @@ function sizeCup() {
   w.style.setProperty("--w", c.w + "px"); w.style.setProperty("--h", c.h + "px");
   w.classList.toggle("glass", c.glass);
   w.closest(".scene").classList.toggle("glassy", c.glass);
-  $("cupname").textContent = ml ? `${c.name} · ${c.ml} ml` : "";
+  $("cupname").textContent = ml ? `${c.name} · ${fmtVol(c.ml)}` : "";
   return c;
 }
 function renderLiquid() {
@@ -1053,9 +1091,9 @@ function renderCupInfo() {
   const entries = byDensity(Object.entries(state.cup).filter(([, n]) => n > 0)).reverse();
   $("recipe").innerHTML = entries.map(([id, n]) =>
     { const p = prepTemp(id, state.cup), c = clash(id, state.cup);
-      return `<div class="vrow"><span class="sw" style="background:${INGREDIENTS[id].color}"></span><span class="nm">${INGREDIENTS[id].name}${c ? `<span class="flag" title="${c}">⚠</span>` : ""}</span><span class="ml">≈ ${n * 30} ml</span><span class="tmp ${p ? tCls((p[0] + (p[1] ?? p[0])) / 2) : ""}">${p ? tFmt(p) : ""}</span></div>`; }).join("")
+      return `<div class="vrow"><span class="sw" style="background:${INGREDIENTS[id].color}"></span><span class="nm">${INGREDIENTS[id].name}${c ? `<span class="flag" title="${c}">⚠</span>` : ""}</span><span class="ml">≈ ${fmtVol(n * 30)}</span><span class="tmp ${p ? tCls((p[0] + (p[1] ?? p[0])) / 2) : ""}">${p ? tFmt(p) : ""}</span></div>`; }).join("")
     + (entries.length ? (() => { const s = serveTemp();
-        return `<div class="vrow total"><span></span><span class="nm" title="Estimated energy">${tWord(s.mid)} · ≈ ${kcal(state.cup)} kcal</span><span class="ml">≈ ${totalParts() * 30} ml</span><span class="tmp ${tCls(s.mid)}" title="${s.est ? "Estimated from the ingredients" : "Typical serving temperature"}">${s.est ? "≈ " : ""}${tFmt(s.r)}</span></div>`; })() : "");
+        return `<div class="vrow total"><span></span><span class="nm" title="Estimated energy">${tWord(s.mid)} · ≈ ${fmtE(kcal(state.cup))}</span><span class="ml">≈ ${fmtVol(totalParts() * 30)}</span><span class="tmp ${tCls(s.mid)}" title="${s.est ? "Estimated from the ingredients" : "Typical serving temperature"}">${s.est ? "≈ " : ""}${tFmt(s.r)}</span></div>`; })() : "");
 
   // brew guide
   const steps = total ? brewSteps() : [];
@@ -1258,6 +1296,20 @@ $("radar").addEventListener("keydown", e => {
 $("radar").addEventListener("focusout", e => { if (!e.relatedTarget || !e.relatedTarget.closest?.(".handle")) ui.focusH = null; });
 $("tasteInfo").onclick = () => { const s = $("tasteSrc"); s.hidden = !s.hidden; $("tasteInfo").setAttribute("aria-expanded", String(!s.hidden)); };
 
+function syncSettings() {
+  document.querySelectorAll("#settings .seg").forEach(g => g.querySelectorAll("button").forEach(b =>
+    b.setAttribute("aria-pressed", String(prefs[g.dataset.key] === b.dataset.v))));
+}
+$("settings").addEventListener("click", e => {
+  const b = e.target.closest(".seg button"); if (!b) return;
+  prefs[b.closest(".seg").dataset.key] = b.dataset.v; savePrefs(); syncSettings(); render();
+});
+$("setReset").onclick = () => { Object.assign(prefs, PREF_DEF); try { localStorage.removeItem(PREF_KEY); } catch (e) {} syncSettings(); render(); };
+const toggleSettings = open => { $("settings").hidden = !open; $("settingsBtn").setAttribute("aria-expanded", String(open)); };
+$("settingsBtn").onclick = e => { e.stopPropagation(); toggleSettings($("settings").hidden); };
+document.addEventListener("click", e => { if (!$("settings").hidden && !e.target.closest("#settings, #settingsBtn")) toggleSettings(false); });
+syncSettings();
+
 function setPhase(p) {
   ui.phase = p;
   document.querySelectorAll(".phases [data-phase]").forEach(b => b.setAttribute("aria-selected", String(b.dataset.phase === p)));
@@ -1298,6 +1350,7 @@ document.addEventListener("keydown", e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (e.key === "/" && document.activeElement !== $("q")) { e.preventDefault(); openSearch(); return; }
   if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
+  if (e.key === "Escape" && !$("settings").hidden) { toggleSettings(false); return; }
   if (e.key === "Escape" && (ui.noteOpen || ui.brewOpen)) { ui.noteOpen = false; ui.brewOpen = false; renderCupInfo(); return; }
   if (ui.phase === "pick" && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); turnPage(1); }
   else if (ui.phase === "pick" && (e.key === "ArrowUp" || e.key === "PageUp")) { e.preventDefault(); turnPage(-1); }
