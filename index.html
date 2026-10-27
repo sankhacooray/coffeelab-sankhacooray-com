@@ -143,7 +143,7 @@
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; min-height: 0; position: relative; }
 
   /* cup pane */
-  .cupside { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 18px 18px 14px; }
+  .cupside { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 30px 18px 14px; }
   /* fixed height: the cup never moves when the verdict gains or loses a line */
   .verdict { flex: none; text-align: center; height: 74px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .verdict .lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
@@ -162,8 +162,8 @@
   .empty-btn { position: absolute; top: 12px; right: 12px; }
 
   /* what's in the cup, top layer first, with rough volumes (1 part ≈ 30 ml) */
-  .vols { width: 100%; max-width: 300px; display: flex; flex-direction: column; gap: 3px; }
-  .vrow { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; align-items: center; gap: 9px; min-height: 28px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; }
+  .vols { width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 3px; }
+  .vrow { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto 62px; align-items: center; gap: 9px; min-height: 28px; padding: 0 10px; border-radius: 8px; font-size: 13.5px; }
   .vrow .sw { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); }
   .vrow .nm { line-height: 1.2; }
   .vrow .ml { color: var(--muted); font-variant-numeric: tabular-nums; }
@@ -199,7 +199,8 @@
   .pager button.on { background: var(--accent); }
 
   /* build: one stage at a time, big ingredient tiles */
-  .ings { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); grid-auto-rows: minmax(84px, 112px); gap: 12px; align-content: center; }
+  .ings { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); grid-auto-rows: minmax(84px, 112px); gap: 12px; align-content: center; overflow: hidden; }
+  .ing.off { display: none; }
   .ing { display: flex; align-items: center; gap: 12px; padding: 0 12px 0 14px; border-radius: 14px; background: var(--panel-2); transition: background-color .15s; }
   .ing.has { background: var(--accent-soft); }
   .ing .sw { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); box-shadow: inset 0 -4px 8px rgba(0,0,0,.15); }
@@ -215,11 +216,47 @@
   .stepnav .pill:hover { background: var(--panel-2); }
   .stepnav .pill[disabled] { visibility: hidden; }
 
-  @media (min-width: 900px) and (max-height: 760px) {
-    .cupside .scene { transform: scale(.8); transform-origin: top center; margin-bottom: -60px; }
+  @media (min-width: 900px) and (max-height: 660px) {
+    .cupside .scene { transform: scale(.7) !important; margin-bottom: -70px !important; }
   }
+  @media (min-width: 900px) and (max-height: 760px) {
+    .cupside .scene { transform: scale(.8); transform-origin: top center; margin-bottom: -38px; }
+  }
+  /* glasses for iced drinks: clear sides, no handle, no saucer */
+  .cup-wrap.glass .cup { background: linear-gradient(to right, rgba(255,255,255,.35), rgba(255,255,255,.08) 30%, rgba(255,255,255,.05) 70%, rgba(255,255,255,.3)); box-shadow: inset 0 0 0 2px rgba(160,190,210,.55), 0 10px 20px rgba(0,0,0,.15); border-radius: 6px 6px 22px 22px / 6px 6px 14px 14px; }
+  .cup-wrap.glass .cup-rim, .cup-wrap.glass .cup-handle { display: none; }
+  .scene.glassy .saucer { opacity: 0; }
+  .saucer { transition: opacity .3s, width .35s; }
+  .cupname { position: absolute; bottom: -20px; left: 0; right: 0; text-align: center; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .scene { margin-bottom: 18px; }
+
+  /* temperatures and clashes */
+  .vrow .tmp { font-size: 12px; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+  .tmp.hot { color: #c2502e; } .tmp.warm { color: #b8862c; } .tmp.cold { color: #3b82b8; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tmp.hot { color: #f08a5d; } :root:not([data-theme="light"]) .tmp.cold { color: #7fb8e6; } }
+  :root[data-theme="dark"] .tmp.hot { color: #f08a5d; } :root[data-theme="dark"] .tmp.cold { color: #7fb8e6; }
+  .flag { color: #c98a12; font-weight: 700; margin-left: 4px; cursor: help; }
+  .ing .nm small { display: block; font-size: 12px; font-weight: 500; color: #b5780c; margin-top: 2px; }
+  .ing.clash { box-shadow: inset 0 0 0 1.5px rgba(201,138,18,.55); }
+
+  /* brew guide: floats over the cup pane */
+  .brew-btn { all: unset; cursor: pointer; position: absolute; top: 14px; left: 14px; height: 30px; padding: 0 12px; border-radius: 999px; font-size: 13px; font-weight: 600; background: var(--panel-2); color: var(--text); display: inline-flex; align-items: center; gap: 6px; z-index: 6; }
+  .brew-btn:hover, .brew-btn[aria-expanded="true"] { background: var(--accent-soft); }
+  .brew-btn[hidden] { display: none; }
+  .brew { position: absolute; inset: 52px 12px auto; max-height: calc(100% - 64px); z-index: 5; padding: 14px 16px; border-radius: 14px; border: 1px solid var(--line);
+    background: var(--bar); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 16px 40px rgba(0,0,0,.2); display: flex; flex-direction: column; gap: 6px; }
+  .brew[hidden] { display: none; }
+  .brew ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+  .brew li { display: grid; grid-template-columns: 22px 16px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 30px; font-size: 13.5px; line-height: 1.25; }
+  .brew li .k { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; font-weight: 700; background: var(--panel-2); color: var(--accent); }
+  .brew li .sw { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,.25); }
+  .brew li .tmp { font-size: 12px; }
+  .brew li.serve { margin-top: 4px; padding: 4px 0; border-radius: 8px; background: var(--panel-2); font-weight: 600; }
+
   /* one-line shared network footer */
-  #scn-footer { flex: none; min-height: 34px; }
+  /* reserve the footer's final height so nothing jumps when its script arrives */
+  #scn-footer { flex: none; min-height: 56px; }
+  @media (max-width: 899px) { #scn-footer { min-height: 52px; } }
 
   @media (max-width: 899px) {
     .main { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr); gap: 10px; padding: 0 10px; }
@@ -241,6 +278,11 @@
     .steps { flex-wrap: nowrap; justify-content: space-between; gap: 4px; }
     .steps .pill { padding: 0 7px; }
     .empty-btn { top: 6px; right: auto; left: 6px; }
+    .brew-btn { top: 9px; left: 46px; }
+    .cupside { padding-top: 40px; }
+    .brew { inset: 46px 8px auto; max-height: calc(100% - 54px); }
+    .cupname { display: none; }
+    .cupside .scene { margin-bottom: -88px; }
     .ing .sw { width: 28px; height: 28px; }
     .pill { height: 30px; padding: 0 11px; font-size: 13px; }
     .steps .pill .t { display: none; }
@@ -252,6 +294,17 @@
     .topbar.searching .search { display: flex; position: absolute; left: 10px; right: 10px; top: calc(10px + env(safe-area-inset-top)); max-width: none; z-index: 40; }
     .topbar.searching .search input { height: 40px; box-shadow: 0 0 0 2px var(--accent); background: var(--panel); }
     .topbar { position: relative; }
+  }
+  @media (max-width: 899px) {
+    #families { gap: 5px; }
+    #families .pill { height: 26px; padding: 0 9px; font-size: 12px; }
+    .cupside { padding-top: 36px; }
+  }
+  @media (max-width: 899px) and (max-height: 720px) {
+    .cupside .scene { transform: scale(.36); margin: -96px -83px; }
+    .vrow { min-height: 22px; font-size: 12.5px; }
+    .verdict { height: 66px; }
+    .verdict .nm { font-size: 19px; }
   }
   @media (max-width: 520px) {
     h1 .word { display: none; }
@@ -274,11 +327,13 @@
     z-index: 0;
   }
   .cup-wrap {
+    --w: 200px; --h: 240px;
     position: relative;
-    width: 200px;
-    height: 240px;
+    width: var(--w);
+    height: var(--h);
     margin-bottom: 10px;
     z-index: 1;
+    transition: width .35s ease, height .35s ease;
   }
   .cup {
     position: absolute; inset: 0;
@@ -358,9 +413,9 @@
   }
   .cup-handle {
     position: absolute;
-    right: -30px; top: 60px;
-    width: 50px; height: 96px;
-    border: 12px solid var(--ceramic);
+    right: calc(var(--w) * -.15); top: 25%;
+    width: calc(var(--w) * .25); height: 40%;
+    border: calc(var(--w) * .06) solid var(--ceramic);
     border-left-color: transparent;
     border-radius: 0 60% 60% 0 / 0 50% 50% 0;
     box-shadow: 2px 2px 6px rgba(0,0,0,.3);
@@ -413,9 +468,11 @@
   <section class="card cupside">
     <button class="iconbtn empty-btn" id="clearBtn" type="button" aria-label="Empty the cup" title="Empty the cup"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></button>
     <div class="verdict idle" id="verdict" aria-live="polite"></div>
+    <button class="brew-btn" id="brewBtn" type="button" aria-expanded="false" aria-controls="brew" hidden><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9h13v5a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6z"/><path d="M17 11h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M8 2.5c0 1.5 1.5 1.5 1.5 3M12 2.5c0 1.5 1.5 1.5 1.5 3"/></svg>Brew guide</button>
+    <div class="brew" id="brew" hidden></div>
     <div class="note" id="note" hidden></div>
     <div class="scene">
-      <div class="cup-wrap">
+      <div class="cup-wrap" id="cupwrap">
         <div class="steam" id="steam"><span></span><span></span><span></span></div>
         <div class="cup-handle"></div>
         <div class="cup">
@@ -424,6 +481,7 @@
         </div>
       </div>
       <div class="saucer"></div>
+      <div class="cupname" id="cupname"></div>
     </div>
     <div class="vols" id="recipe"></div>
     <div class="near" id="near"></div>
@@ -439,6 +497,7 @@
     <div class="phase" data-phase="build">
       <div class="pills steps" id="steps"></div>
       <div class="ings" id="ings"></div>
+      <div class="pager" id="ingPager"></div>
       <div class="stepnav">
         <button class="pill" id="prevStep" type="button"></button>
         <button class="pill" id="nextStep" type="button"></button>
@@ -585,12 +644,111 @@ function closestDrinks(n = 3) {
 /* ============================================================
    UI STATE — one phase and one build step on screen at a time
    ============================================================ */
-const ui = { phase: "pick", step: 0, page: 0, noteOpen: false };
+const ui = { phase: "pick", step: 0, page: 0, ingPage: 0, noteOpen: false };
 const $ = id => document.getElementById(id);
 const stagesInUse = STAGES.filter(s => Object.values(INGREDIENTS).some(i => i.stage === s.id));
 const byDensity = entries => entries.sort((a, b) => INGREDIENTS[a[0]].density - INGREDIENTS[b[0]].density);
 
 const shortName = id => { const n = INGREDIENTS[id].name; return n.length <= 12 ? n : n.split(" ")[0]; };
+
+/* ============================================================
+   CUPS — standard sizes; the smallest that holds the drink is used
+   ============================================================ */
+const CUPS = [
+  { name: "Espresso cup",   ml: 90,  w: 112, h: 96,  glass: false },
+  { name: "Cappuccino cup", ml: 180, w: 160, h: 150, glass: false },
+  { name: "Latte mug",      ml: 300, w: 200, h: 220, glass: false },
+  { name: "Large mug",      ml: 450, w: 220, h: 268, glass: false },
+  { name: "Tall glass",     ml: 360, w: 150, h: 250, glass: true },
+  { name: "Large glass",    ml: 480, w: 170, h: 280, glass: true },
+];
+
+/* ============================================================
+   TEMPERATURE + BREWING — rough home-barista numbers, °C
+   ============================================================ */
+const HOT_PREP = ["hot_water", "steamed_milk", "milk_foam"];
+const COLD = ["ice", "cold_water", "cold_milk", "cold_brew"];
+const MILKS = Object.keys(INGREDIENTS).filter(id => INGREDIENTS[id].stage === "milk");
+const BASES = ["espresso", "ristretto", "cold_brew"];
+const SYRUPS = ["chocolate", "vanilla_syrup", "caramel_syrup"];
+const has = (cup, ids) => ids.some(id => cup[id] > 0);
+const isIced = cup => has(cup, COLD);
+// typical serving temperature of each famous coffee
+const SERVE = {
+  espresso: [65, 70], doppio: [65, 70], ristretto: [65, 70], americano: [70, 75], long_black: [70, 75],
+  macchiato: [60, 65], cortado: [60, 65], flat_white: [60, 65], cappuccino: [60, 65], latte: [60, 65],
+  mocha: [60, 65], vienna: [55, 60], cubano: [65, 70], vanilla_latte: [60, 65], caramel_macc: [60, 65],
+  oat_latte: [55, 60], almond_latte: [50, 55], soy_latte: [55, 60], pistachio_latte: [55, 60],
+  affogato: [20, 30], iced_latte: [4, 8], iced_americano: [4, 8], cold_brew: [4, 8], irish: [65, 70],
+};
+// how warm each ingredient is when it reaches the cup (ice counts colder: it melts)
+function cupTemp(id, iced) {
+  const T = { espresso: 70, ristretto: 70, cold_brew: 4, hot_water: 85, cold_water: 8, ice: -10, steamed_milk: 62,
+    cold_milk: 4, milk_foam: iced ? 4 : 62, whipped_cream: 5, ice_cream: -20 };
+  if (id in T) return T[id];
+  if (MILKS.includes(id)) return iced ? 4 : 58;
+  return 22;                                   // sugar, syrups, spirit, cocoa: room temperature
+}
+// the temperature you prepare an ingredient at, if it matters
+function prepTemp(id, cup) {
+  const iced = isIced(cup);
+  const P = { steamed_milk: [55, 65], oat_milk: [55, 60], soy_milk: [55, 60], pistachio_oat_milk: [55, 60], almond_milk: [50, 55] };
+  if (P[id]) return iced ? [4] : P[id];
+  return { milk_foam: iced ? [4] : [60, 65], hot_water: [80, 90], cold_water: [8], cold_milk: [4], ice: [0], cold_brew: [4],
+    whipped_cream: [4], ice_cream: [-12] }[id] || null;
+}
+const tFmt = r => r.length > 1 ? `${r[0]}–${r[1]} °C` : `${r[0]} °C`.replace("-", "−");
+const tCls = mid => mid >= 55 ? "hot" : mid >= 35 ? "warm" : mid >= 15 ? "" : "cold";
+const tWord = mid => mid >= 55 ? "Hot" : mid >= 35 ? "Warm" : mid >= 15 ? "Cool" : "Iced";
+function serveTemp() {
+  const match = findMatch();
+  if (match && SERVE[match.id]) { const r = SERVE[match.id]; return { r, mid: (r[0] + r[1]) / 2 }; }
+  const e = Object.entries(state.cup).filter(([, n]) => n > 0), iced = isIced(state.cup);
+  const parts = e.reduce((s, [, n]) => s + n, 0);
+  const mid = Math.round(Math.max(2, e.reduce((s, [id, n]) => s + n * cupTemp(id, iced), 0) / parts));
+  return { r: [mid], mid, est: true };
+}
+
+/* an ingredient that doesn't suit what's already in the cup (still allowed) */
+function clash(id, cupIn) {
+  const cup = { ...cupIn }; delete cup[id];
+  if (!Object.keys(cup).length) return null;
+  if (HOT_PREP.includes(id) && isIced(cup)) return "Hot in an iced drink";
+  if (COLD.includes(id) && has(cup, HOT_PREP)) return "Cold in a hot drink";
+  if (BASES.includes(id) && has(cup, BASES.filter(b => b !== id))) return "Already has a base";
+  if (MILKS.includes(id) && has(cup, MILKS.filter(m => m !== id))) return "Already has a milk";
+  if (id === "ice_cream" && has(cup, ["steamed_milk", "hot_water"])) return "Melts in hot liquid";
+  if ((id === "steamed_milk" || id === "hot_water") && cup.ice_cream) return "Melts the ice cream";
+  if (id === "sugar" && has(cup, SYRUPS)) return "Already sweetened";
+  if (SYRUPS.includes(id) && cup.sugar) return "Already sweetened";
+  return null;
+}
+
+/* ordered steps to make what's in the cup */
+function brewSteps() {
+  const cup = state.cup, iced = isIced(cup), S = [];
+  const ml = id => cup[id] * 30, name = id => INGREDIENTS[id].name.toLowerCase();
+  const add = (id, text, r) => S.push({ id, text, r });
+  const sweet = ["sugar", ...SYRUPS].filter(id => cup[id]);
+  if (sweet.length) add(sweet[0], `Add ${sweet.map(name).join(" and ")} to the cup`);
+  if (cup.ice) add("ice", "Fill the glass with ice", [0]);
+  if (cup.ice_cream) add("ice_cream", "Add a scoop of vanilla ice cream", [-12]);
+  if (cup.cold_brew) add("cold_brew", `Pour ${ml("cold_brew")} ml cold brew, steeped 12–24 h`, [4]);
+  for (const b of ["espresso", "ristretto"]) if (cup[b])
+    add(b, `Pull ${cup[b]} ${b === "espresso" ? "shot" : "ristretto"}${cup[b] > 1 ? "s" : ""}, ${b === "espresso" ? "25–30" : "15–20"} s`, [90, 96]);
+  if (cup.hot_water) add("hot_water", `Add ${ml("hot_water")} ml hot water`, [80, 90]);
+  if (cup.cold_water) add("cold_water", `Add ${ml("cold_water")} ml cold water`, [8]);
+  for (const m of MILKS) if (cup[m]) {
+    if (iced || m === "cold_milk") add(m, `Pour ${ml(m)} ml ${name(m).replace("cold ", "")} cold`, [4]);
+    else add(m, `Steam ${ml(m)} ml ${name(m).replace("steamed ", "")} with the frothing wand`, prepTemp(m, cup));
+  }
+  if (cup.milk_foam) iced ? add("milk_foam", "Whip cold foam and spoon it on top", [4])
+                          : add("milk_foam", "Froth milk until airy, spoon the foam on top", [60, 65]);
+  if (cup.whisky) add("whisky", `Stir in ${ml("whisky")} ml Irish whiskey`);
+  if (cup.whipped_cream) add("whipped_cream", "Float whipped cream on top", [4]);
+  if (cup.cocoa) add("cocoa", "Dust with cocoa");
+  return S;
+}
 
 /* a recipe drawn as stacked colour bands in a small glass */
 function glass(recipe) {
@@ -627,25 +785,33 @@ function renderDrinks() {
   paginate();
 }
 
-function paginate() {
-  const root = $("drinks"), tiles = [...root.children], pager = $("pager");
-  tiles.forEach(t => t.classList.remove("off"));
+/* split a grid's items into pages that fit its box (never scroll, never squeeze) */
+function fitPages(root, pager, key) {
+  const items = [...root.children];
+  items.forEach(t => t.classList.remove("off"));
   pager.innerHTML = "";
-  if (!tiles.length || !root.offsetParent) return;
+  if (!items.length || !root.offsetParent) return;
   const cs = getComputedStyle(root);
   const cols = cs.gridTemplateColumns.split(" ").length;
-  const rowH = tiles[0].getBoundingClientRect().height, gap = parseFloat(cs.rowGap) || 0;
+  const rowH = items[0].getBoundingClientRect().height, gap = parseFloat(cs.rowGap) || 0;
   const rows = Math.max(1, Math.floor((root.clientHeight + gap) / (rowH + gap)));
-  const per = cols * rows, pages = Math.ceil(tiles.length / per);
-  ui.page = Math.min(ui.page, pages - 1);
-  tiles.forEach((t, i) => t.classList.toggle("off", Math.floor(i / per) !== ui.page));
+  const per = cols * rows, pages = Math.ceil(items.length / per);
+  ui[key] = Math.min(ui[key], pages - 1);
+  items.forEach((t, i) => t.classList.toggle("off", Math.floor(i / per) !== ui[key]));
   if (pages > 1) pager.innerHTML = Array.from({ length: pages }, (_, i) =>
-    `<button class="${i === ui.page ? "on" : ""}" data-page="${i}" aria-label="Page ${i + 1}"></button>`).join("");
+    `<button class="${i === ui[key] ? "on" : ""}" data-page="${i}" aria-label="Page ${i + 1}"></button>`).join("");
 }
+const paginate = () => fitPages($("drinks"), $("pager"), "page");
+const paginateIngs = () => fitPages($("ings"), $("ingPager"), "ingPage");
 $("pager").onclick = e => { const b = e.target.closest("[data-page]"); if (b) { ui.page = +b.dataset.page; paginate(); } };
+$("ingPager").onclick = e => { const b = e.target.closest("[data-page]"); if (b) { ui.ingPage = +b.dataset.page; paginateIngs(); } };
 function turnPage(d) {
   const pages = $("pager").children.length || 1;
   const p = ui.page + d; if (p < 0 || p >= pages) return; ui.page = p; paginate();
+}
+function turnIngPage(d) {
+  const pages = $("ingPager").children.length || 1;
+  const p = ui.ingPage + d; if (p < 0 || p >= pages) return; ui.ingPage = p; paginateIngs();
 }
 
 /* ============================================================
@@ -660,17 +826,19 @@ function renderBuild() {
   const ids = Object.keys(INGREDIENTS).filter(id => INGREDIENTS[id].stage === stage.id);
   $("ings").innerHTML = ids.map(id => {
     const ing = INGREDIENTS[id], n = state.cup[id] || 0;
-    return `<div class="ing${n ? " has" : ""}"><span class="sw" style="background:${ing.color}"></span><span class="nm">${ing.name}</span>
+    const c = clash(id, state.cup);
+    return `<div class="ing${n ? " has" : ""}${c ? " clash" : ""}"><span class="sw" style="background:${ing.color}"></span><span class="nm">${ing.name}${c ? `<small>⚠ ${c}</small>` : ""}</span>
       <span class="qty"><button class="minus" data-id="${id}" data-delta="-1" aria-label="Less ${ing.name}">−</button><span class="n${n ? "" : " zero"}">${n}</span><button class="plus" data-id="${id}" data-delta="1" aria-label="More ${ing.name}">+</button></span></div>`;
   }).join("");
   const prev = stagesInUse[ui.step - 1], next = stagesInUse[ui.step + 1];
   $("prevStep").disabled = !prev; $("prevStep").textContent = prev ? prev.title : "";
   $("nextStep").disabled = !next; $("nextStep").textContent = next ? next.title : "";
+  paginateIngs();
 }
-$("steps").onclick = e => { const b = e.target.closest("[data-step]"); if (b) { ui.step = +b.dataset.step; renderBuild(); } };
+$("steps").onclick = e => { const b = e.target.closest("[data-step]"); if (b) { ui.step = +b.dataset.step; ui.ingPage = 0; renderBuild(); } };
 $("prevStep").onclick = () => goStep(-1);
 $("nextStep").onclick = () => goStep(1);
-function goStep(d) { const s = ui.step + d; if (s < 0 || s >= stagesInUse.length) return; ui.step = s; renderBuild(); }
+function goStep(d) { const s = ui.step + d; if (s < 0 || s >= stagesInUse.length) return; ui.step = s; ui.ingPage = 0; renderBuild(); }
 $("ings").onclick = e => {
   const btn = e.target.closest("button[data-id]"); if (!btn) return;
   const id = btn.dataset.id, next = (state.cup[id] || 0) + parseInt(btn.dataset.delta, 10);
@@ -681,14 +849,25 @@ $("ings").onclick = e => {
 /* ============================================================
    CUP — liquid, verdict, recipe chips, nearest drinks
    ============================================================ */
+function sizeCup() {
+  const ml = totalParts() * 30, pool = CUPS.filter(c => c.glass === isIced(state.cup));
+  const c = ml ? (pool.find(c => ml <= c.ml) || pool[pool.length - 1]) : CUPS[2];
+  const w = $("cupwrap");
+  w.style.setProperty("--w", c.w + "px"); w.style.setProperty("--h", c.h + "px");
+  w.classList.toggle("glass", c.glass);
+  w.closest(".scene").classList.toggle("glassy", c.glass);
+  $("cupname").textContent = ml ? `${c.name} · ${c.ml} ml` : "";
+  return c;
+}
 function renderLiquid() {
+  sizeCup();
   const liquid = $("liquid");
   liquid.innerHTML = "";
   const entries = Object.entries(state.cup).filter(([, n]) => n > 0);
   const total = entries.reduce((s, [, n]) => s + n, 0);
   if (total === 0) { liquid.style.height = "0"; $("steam").style.opacity = "0"; return; }
   byDensity(entries);
-  liquid.style.height = (Math.min(total / CAPACITY, 1) * 100) + "%";
+  liquid.style.height = (Math.min(total * 30 / sizeCup().ml, 1) * 100) + "%";
   for (const [id, parts] of entries) {
     const ing = INGREDIENTS[id];
     const layer = document.createElement("div");
@@ -716,19 +895,32 @@ function renderCupInfo() {
     v.className = "verdict";
     v.innerHTML = `<span class="lbl">Closest</span><span class="nm">${c.name}</span><span class="away">${dist} step${dist === 1 ? "" : "s"} away</span>`;
   }
-  note.hidden = !(match && ui.noteOpen);
+  note.hidden = !(match && ui.noteOpen) || !!ui.brewOpen;
   const info = $("infoBtn");
-  if (info) info.onclick = () => { ui.noteOpen = !ui.noteOpen; renderCupInfo(); };
+  if (info) info.onclick = () => { ui.noteOpen = !ui.noteOpen; if (ui.noteOpen) ui.brewOpen = false; renderCupInfo(); };
 
   const entries = byDensity(Object.entries(state.cup).filter(([, n]) => n > 0)).reverse();
   $("recipe").innerHTML = entries.map(([id, n]) =>
-    `<div class="vrow"><span class="sw" style="background:${INGREDIENTS[id].color}"></span><span class="nm">${INGREDIENTS[id].name}</span><span class="ml">≈ ${n * 30} ml</span></div>`).join("")
-    + (entries.length ? `<div class="vrow total"><span></span><span class="nm">In the cup</span><span class="ml">≈ ${totalParts() * 30} ml</span></div>` : "");
+    { const p = prepTemp(id, state.cup), c = clash(id, state.cup);
+      return `<div class="vrow"><span class="sw" style="background:${INGREDIENTS[id].color}"></span><span class="nm">${INGREDIENTS[id].name}${c ? `<span class="flag" title="${c}">⚠</span>` : ""}</span><span class="ml">≈ ${n * 30} ml</span><span class="tmp ${p ? tCls((p[0] + (p[1] ?? p[0])) / 2) : ""}">${p ? tFmt(p) : ""}</span></div>`; }).join("")
+    + (entries.length ? (() => { const s = serveTemp();
+        return `<div class="vrow total"><span></span><span class="nm">${tWord(s.mid)}</span><span class="ml">≈ ${totalParts() * 30} ml</span><span class="tmp ${tCls(s.mid)}" title="${s.est ? "Estimated from the ingredients" : "Typical serving temperature"}">${s.est ? "≈ " : ""}${tFmt(s.r)}</span></div>`; })() : "");
+
+  // brew guide
+  const steps = total ? brewSteps() : [];
+  $("brewBtn").hidden = !steps.length;
+  if (!steps.length) ui.brewOpen = false;
+  $("brewBtn").setAttribute("aria-expanded", String(!!ui.brewOpen));
+  $("brew").hidden = !ui.brewOpen;
+  if (ui.brewOpen) { const s = serveTemp();
+    $("brew").innerHTML = `<ol>${steps.map((st, i) => `<li><span class="k">${i + 1}</span><span class="sw" style="background:${INGREDIENTS[st.id].color}"></span><span>${st.text}</span><span class="tmp ${st.r ? tCls((st.r[0] + (st.r[1] ?? st.r[0])) / 2) : ""}">${st.r ? tFmt(st.r) : ""}</span></li>`).join("")}
+      <li class="serve"><span class="k">✓</span><span></span><span>Serve ${tWord(s.mid).toLowerCase()}</span><span class="tmp ${tCls(s.mid)}">${s.est ? "≈ " : ""}${tFmt(s.r)}</span></li></ol>`; }
 
   // in progress: tap a near drink to pour it
   $("near").innerHTML = (!match && total) ? closestDrinks(3).map(({ c, dist }) =>
     `<button data-id="${c.id}">${c.name}<span class="d">${dist}</span></button>`).join("") : "";
 }
+$("brewBtn").onclick = () => { ui.brewOpen = !ui.brewOpen; if (ui.brewOpen) ui.noteOpen = false; renderCupInfo(); };
 $("near").onclick = e => {
   const b = e.target.closest("[data-id]"); if (!b) return;
   state.cup = { ...COFFEES.find(c => c.id === b.dataset.id).recipe }; render();
@@ -782,9 +974,13 @@ function choose(h) {
     const per = tiles.filter(t => !t.classList.contains("off")).length || 1;
     if (idx >= 0) { ui.page = Math.floor(idx / per); paginate(); }
   } else {
-    ui.step = Math.max(0, stagesInUse.findIndex(s => s.id === h.item.stage));
+    ui.step = Math.max(0, stagesInUse.findIndex(s => s.id === h.item.stage)); ui.ingPage = 0;
     setPhase("build");
     const tile = document.querySelector(`.ing button[data-id="${h.id}"]`)?.closest(".ing");
+    if (tile && tile.classList.contains("off")) {          // jump to the page that shows it
+      const all = [...$("ings").children], per = all.filter(t => !t.classList.contains("off")).length || 1;
+      ui.ingPage = Math.floor(all.indexOf(tile) / per); paginateIngs();
+    }
     if (tile) { tile.classList.add("flash"); setTimeout(() => tile.classList.remove("flash"), 1600); }
   }
   closeSearch();
@@ -817,6 +1013,7 @@ function render() {
   renderBuild();
   renderLiquid();
   renderCupInfo();
+  paginate();          // the cup pane may have grown: re-fit the tiles beside or below it
 }
 
 $("clearBtn").onclick = () => { state.cup = {}; ui.noteOpen = false; render(); };
@@ -841,9 +1038,11 @@ document.addEventListener("keydown", e => {
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (e.key === "/" && document.activeElement !== $("q")) { e.preventDefault(); openSearch(); return; }
   if (/^(INPUT|TEXTAREA)$/.test(document.activeElement.tagName)) return;
-  if (e.key === "Escape" && ui.noteOpen) { ui.noteOpen = false; renderCupInfo(); return; }
+  if (e.key === "Escape" && (ui.noteOpen || ui.brewOpen)) { ui.noteOpen = false; ui.brewOpen = false; renderCupInfo(); return; }
   if (ui.phase === "pick" && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); turnPage(1); }
   else if (ui.phase === "pick" && (e.key === "ArrowUp" || e.key === "PageUp")) { e.preventDefault(); turnPage(-1); }
+  else if (ui.phase === "build" && (e.key === "ArrowDown" || e.key === "PageDown")) { e.preventDefault(); turnIngPage(1); }
+  else if (ui.phase === "build" && (e.key === "ArrowUp" || e.key === "PageUp")) { e.preventDefault(); turnIngPage(-1); }
   else if (ui.phase === "build" && e.key === "ArrowRight") goStep(1);
   else if (ui.phase === "build" && e.key === "ArrowLeft") goStep(-1);
 });
@@ -853,7 +1052,8 @@ $("drinks").addEventListener("wheel", e => {
   if (Math.abs(e.deltaY) < 20 || Date.now() < wheelLock) return;
   wheelLock = Date.now() + 500; turnPage(e.deltaY > 0 ? 1 : -1);
 }, { passive: false });
-addEventListener("resize", paginate);
+new ResizeObserver(() => paginate()).observe($("drinks"));
+new ResizeObserver(() => paginateIngs()).observe($("ings"));   // re-fit whenever the grid changes size (resize, footer load, cup pane growth)
 
 /* Theme switch shared with the sankhacooray.com family (sc-theme) */
 (function(){var r=document.documentElement,K="sc-theme",mq=window.matchMedia("(prefers-color-scheme: dark)");function eff(){var a=r.getAttribute("data-theme");if(a==="light"||a==="dark")return a;return mq.matches?"dark":"light"}
