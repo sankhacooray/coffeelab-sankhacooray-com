@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#3a1f10">
+<meta name="theme-color" content="#f6efe4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1a120c" media="(prefers-color-scheme: dark)">
+<meta name="color-scheme" content="light dark">
+<script>(function(){try{var t=localStorage.getItem("sc-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <title>Coffee Lab — Build your espresso drink</title>
 
 <meta name="description" content="A small visual lab for building coffee drinks. Add a base, milk, sweetener and toppings to a virtual cup and watch which famous coffee you just made.">
@@ -36,42 +39,97 @@
 <meta name="apple-mobile-web-app-title" content="Coffee Lab">
 
 <style>
+  /* Light (latte) is the default; dark (espresso) follows the system or the switch. */
   :root {
-    --bg: #1a120c;
-    --bg-2: #211710;
-    --panel: #2a1d14;
-    --panel-2: #34251a;
-    --line: #4a3424;
-    --text: #f3e7d6;
-    --muted: #b39b80;
-    --accent: #d4a574;
-    --accent-2: #c97a3c;
-    --ok: #8fd584;
+    --bg: #f6efe4;
+    --bg-glow-1: #f1dfc6;
+    --bg-glow-2: #efe3d2;
+    --panel: #fffaf3;
+    --panel-2: #f5ebdd;
+    --line: #e6d6c0;
+    --text: #2b1a0f;
+    --muted: #7d624a;
+    --accent: #9a5a26;
+    --accent-2: #b8692c;
+    --accent-hi: #ad6a33;
+    --accent-soft: #9a5a2622;
+    --cta-text: #ffffff;
+    --card-hover: #f6ead9;
+    --bar: #fffaf3d9;
+    --ok: #3f8f3a;
     --ceramic: #f0e4d3;
     --ceramic-shadow: #c9b89c;
+    --saucer-shadow: rgba(80,50,20,.25);
+    --page-bg: #f6efe4;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+    --bg: #1a120c; --bg-glow-1: #3a2515; --bg-glow-2: #2a1810;
+    --panel: #2a1d14; --panel-2: #34251a; --line: #4a3424;
+    --text: #f3e7d6; --muted: #b39b80;
+    --accent: #d4a574; --accent-2: #c97a3c; --accent-hi: #e2b98c; --accent-soft: #d4a57426;
+    --cta-text: #241509; --card-hover: #34251a; --bar: #1f150ed9; --ok: #8fd584;
+    --saucer-shadow: rgba(0,0,0,.5); --page-bg: #1a120c; color-scheme: dark;
+  } }
+  :root[data-theme="dark"] {
+    --bg: #1a120c; --bg-glow-1: #3a2515; --bg-glow-2: #2a1810;
+    --panel: #2a1d14; --panel-2: #34251a; --line: #4a3424;
+    --text: #f3e7d6; --muted: #b39b80;
+    --accent: #d4a574; --accent-2: #c97a3c; --accent-hi: #e2b98c; --accent-soft: #d4a57426;
+    --cta-text: #241509; --card-hover: #34251a; --bar: #1f150ed9; --ok: #8fd584;
+    --saucer-shadow: rgba(0,0,0,.5); --page-bg: #1a120c; color-scheme: dark;
   }
   * { box-sizing: border-box; }
-  html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); }
+  /* rule 14: body is the scroller, no overscroll bounce, no white edge */
+  html { height: 100%; overflow: hidden; background: var(--page-bg); overscroll-behavior: none; }
   body {
+    height: 100%; margin: 0; overflow-y: auto; overflow-x: hidden; overscroll-behavior: none;
+    color: var(--text);
     font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
     background:
-      radial-gradient(1200px 600px at 80% -10%, #3a2515 0%, transparent 60%),
-      radial-gradient(800px 500px at 10% 100%, #2a1810 0%, transparent 60%),
+      radial-gradient(1200px 600px at 80% -10%, var(--bg-glow-1) 0%, transparent 60%),
+      radial-gradient(800px 500px at 10% 100%, var(--bg-glow-2) 0%, transparent 60%),
       var(--bg);
-    min-height: 100vh;
+    background-attachment: fixed;
+    display: flex; flex-direction: column;
   }
-  .wrap { max-width: 1400px; margin: 0 auto; padding: 10px 18px 14px; }
-  header { padding: 2px 2px 8px; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; }
-  h1 .bean { display: inline-block; width: 10px; height: 14px; background: var(--accent); border-radius: 50%/40%; margin-right: 6px; transform: translateY(2px); box-shadow: inset -2px 0 0 rgba(0,0,0,.3); }
-  .sub { color: var(--muted); font-size: 12px; }
+
+  /* Full-width app bar (rules 7, 10, 12, 19, 23): brand left, theme switch + one CTA right, no bottom border */
+  .topbar {
+    position: sticky; top: 0; z-index: 20; flex: none;
+    padding-top: env(safe-area-inset-top);
+    background: var(--bar); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px);
+  }
+  .topbar .bar-in { display: flex; align-items: center; gap: 14px; height: 56px; padding: 0 max(18px, env(safe-area-inset-left)) 0 max(18px, env(safe-area-inset-left)); }
+  h1 { font-size: 18px; margin: 0; letter-spacing: -.01em; white-space: nowrap; display: flex; align-items: center; }
+  h1 .bean { display: inline-block; width: 10px; height: 14px; background: var(--accent); border-radius: 50%/40%; margin-right: 8px; box-shadow: inset -2px 0 0 rgba(0,0,0,.3); }
+  .sub { color: var(--muted); font-size: 12.5px; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .spacer { flex: 1; }
+  .iconbtn { all: unset; cursor: pointer; flex: none; width: 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; color: var(--muted); transition: background-color .15s, color .15s; }
+  .iconbtn:hover { color: var(--text); background: var(--accent-soft); }
+  .iconbtn:focus-visible, .cta:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  /* the switch shows the theme it switches TO: moon on light, sun on dark */
+  .ico-sun { display: none; }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ico-sun { display: block; } :root:not([data-theme="light"]) .ico-moon { display: none; } }
+  :root[data-theme="dark"] .ico-sun { display: block; } :root[data-theme="dark"] .ico-moon { display: none; }
+  .cta {
+    flex: none; cursor: pointer; border: 0; font: inherit; font-size: 14px; font-weight: 600; line-height: 1;
+    background: var(--accent); color: var(--cta-text); padding: 10px 18px; border-radius: 999px; white-space: nowrap;
+    transition: background-color .15s, box-shadow .15s;
+  }
+  .cta:hover { background: var(--accent-hi); box-shadow: 0 0 0 4px var(--accent-soft), 0 6px 20px -6px var(--accent); }
+  .cta .short { display: none; }
+  @media (max-width: 760px) { .sub { display: none; } }
+  @media (max-width: 420px) { .cta .long { display: none; } .cta .short { display: inline; } .topbar .bar-in { gap: 8px; } }
+
+  .wrap { width: 100%; max-width: 1400px; margin: 0 auto; padding: 4px 18px 0; flex: 1 0 auto; display: flex; flex-direction: column; }
 
   .card { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; margin: 0; }
   .card h2 { font-size: 11px; text-transform: uppercase; letter-spacing: .12em; color: var(--muted); margin: 0 0 8px; font-weight: 600; }
 
   .layout { display: grid; grid-template-columns: 240px 280px 1fr; gap: 12px; align-items: stretch; }
-  @media (max-width: 980px) { .layout { grid-template-columns: 1fr; } }
+  @media (max-width: 980px) { .layout { grid-template-columns: minmax(0, 1fr); } }
 
   .families { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 8px; }
   .fam-btn {
@@ -89,7 +147,7 @@
     font: inherit;
     display: flex; align-items: baseline; gap: 8px; overflow: hidden;
   }
-  .drink:hover { border-color: var(--accent); }
+  .drink:hover { background: var(--card-hover); }
   .drink.active { border-color: var(--accent-2); background: var(--panel); box-shadow: 0 0 0 1px var(--accent-2); }
   .drink .name { font-weight: 600; font-size: 12px; flex-shrink: 0; white-space: nowrap; }
   .drink .ings { color: var(--muted); font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
@@ -109,7 +167,7 @@
     width: 260px; height: 18px;
     background: radial-gradient(ellipse at center, var(--ceramic) 0%, var(--ceramic-shadow) 90%, transparent 100%);
     border-radius: 50%;
-    box-shadow: 0 8px 18px rgba(0,0,0,.5);
+    box-shadow: 0 8px 18px var(--saucer-shadow);
     z-index: 0;
   }
   .cup-wrap {
@@ -228,7 +286,7 @@
   }
 
   .match-banner {
-    margin-top: 10px;
+    margin-bottom: 6px;
     padding: 8px 12px;
     width: 100%;
     background: linear-gradient(90deg, rgba(212,165,116,.18), rgba(201,122,60,.18));
@@ -310,9 +368,8 @@
   }
   .stage { display: flex; flex-direction: column; gap: 4px; }
   .stage-head {
-    display: flex; align-items: baseline; gap: 6px; padding-bottom: 4px;
-    border-bottom: 1px dashed var(--line);
-    margin-bottom: 4px;
+    display: flex; align-items: baseline; gap: 6px; padding-bottom: 2px;
+    margin-bottom: 2px;
   }
   .stage-head .stage-num {
     width: 18px; height: 18px; border-radius: 50%;
@@ -357,25 +414,52 @@
   }
   .ing-amount.zero { color: var(--muted); font-weight: 400; }
 
-  footer { margin-top: 10px; padding: 4px 4px; color: var(--muted); font-size: 11px; text-align: center; }
-  footer a { color: var(--accent); }
+  /* rule 18: footer is one short line */
+  .footer { flex: none; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 4px 14px; padding: 10px 4px 12px; color: var(--muted); font-size: 12.5px; }
+  .footer a { color: var(--muted); text-decoration: none; }
+  .footer a:hover { color: var(--accent); }
+
+  /* rule 33: on laptops the tool fits the screen; long lists scroll inside their own panel */
+  @media (min-width: 981px) and (min-height: 600px) {
+    body { overflow-y: hidden; }
+    .wrap { flex: 1 1 0; min-height: 0; }
+    .layout { flex: 1 1 0; min-height: 0; grid-template-rows: minmax(0, 1fr); }
+    .layout > .card { min-height: 0; }
+    .drinks-card { display: flex; flex-direction: column; }
+    .drinks-card .drinks { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding-right: 2px; scrollbar-width: thin; }
+    .viz { overflow-y: auto; scrollbar-width: thin; }
+    .stages-card .stages-grid { flex: 1 1 0; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  }
+  @media (max-width: 980px) {
+    .stages-grid { grid-template-columns: 1fr; }
+    .scene { transform: scale(.92); transform-origin: bottom center; }
+    .viz { order: -1; }   /* answer first: the cup and its verdict lead on phones */
+  }
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
+<header class="topbar">
+  <div class="bar-in">
     <h1><span class="bean"></span>Coffee Lab</h1>
-    <div class="sub">Pick a coffee, or build one — base, milk, sweetener, toppings — and watch which famous drink you just made.</div>
-  </header>
+    <div class="sub">Pick a coffee, or build one, and watch which famous drink you just made.</div>
+    <div class="spacer"></div>
+    <button class="iconbtn" id="theme-toggle" type="button" aria-label="Switch theme" title="Switch theme"><svg class="ico-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5a8.5 8.5 0 1 0 10.7 10.7z"/></svg><svg class="ico-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg></button>
+    <button class="cta" id="randomBtn" type="button"><span class="long">Pour a random coffee</span><span class="short">Random coffee</span></button>
+  </div>
+</header>
+<div class="wrap">
 
   <div class="layout">
-    <div class="card">
+    <div class="card drinks-card">
       <h2>Famous coffees</h2>
       <div class="families" id="families"></div>
       <div class="drinks" id="drinks"></div>
     </div>
 
     <div class="card viz">
+      <div class="match-banner empty" id="matchBanner" aria-live="polite">
+        <span class="hint">Add ingredients to start brewing</span>
+      </div>
       <div class="scene">
         <div class="cup-wrap">
           <div class="steam" id="steam">
@@ -389,9 +473,6 @@
         </div>
         <div class="saucer"></div>
       </div>
-      <div class="match-banner empty" id="matchBanner">
-        <span class="hint">Add ingredients to start brewing</span>
-      </div>
       <div class="notes" id="notes"></div>
     </div>
 
@@ -404,12 +485,12 @@
     </div>
   </div>
 
-  <!-- Shared network footer · cdn.sankhacooray.com (auto-themes to this page) -->
-  <div id="scn-footer"></div>
-  <script async src="https://cdn.sankhacooray.com/js/sankha-footer.js?v=20260901"
-          data-site="coffeelab.sankhacooray.com"
-          data-tagline="a small visual coffee lab"></script>
 </div>
+<footer class="footer">
+  <span>Coffee Lab · a small visual coffee lab</span>
+  <a href="https://sankhacooray.com">sankhacooray.com</a>
+  <a href="https://github.com/sankhacooray/coffeelab-sankhacooray-com">Source</a>
+</footer>
 
 <script>
 /* ============================================================
@@ -726,6 +807,26 @@ function render() {
 }
 
 document.getElementById("clearBtn").onclick = () => { state.cup = {}; render(); };
+
+/* App-bar CTA: pour a random famous coffee (never the one already in the cup) */
+document.getElementById("randomBtn").onclick = () => {
+  const current = findMatch();
+  const pool = COFFEES.filter(c => !current || c.id !== current.id);
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  state.cup = { ...pick.recipe };
+  if (state.activeFamily !== "All" && state.activeFamily !== pick.family) { state.activeFamily = pick.family; renderFamilies(); }
+  render();
+  const active = document.querySelector(".drink.active");
+  if (window.matchMedia("(min-width: 981px)").matches) { if (active) active.scrollIntoView({ block: "nearest" }); }
+  else document.body.scrollTo({ top: 0, behavior: "smooth" });
+};
+
+/* Theme switch shared with the sankhacooray.com family (sc-theme) */
+(function(){var r=document.documentElement,K="sc-theme",mq=window.matchMedia("(prefers-color-scheme: dark)");function eff(){var a=r.getAttribute("data-theme");if(a==="light"||a==="dark")return a;return mq.matches?"dark":"light"}
+  var b=document.getElementById("theme-toggle");if(!b)return;
+  function label(){var l="Switch to "+(eff()==="dark"?"light":"dark")+" theme";b.setAttribute("aria-label",l);b.title=l}
+  label();if(mq.addEventListener)mq.addEventListener("change",label);
+  b.addEventListener("click",function(){var n=eff()==="dark"?"light":"dark";try{localStorage.setItem(K,n)}catch(e){}r.setAttribute("data-theme",n);label()})})();
 
 renderFamilies();
 render();
