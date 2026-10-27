@@ -144,7 +144,8 @@
 
   /* cup pane */
   .cupside { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px; padding: 18px 18px 14px; }
-  .verdict { text-align: center; min-height: 58px; display: flex; flex-direction: column; justify-content: center; }
+  /* fixed height: the cup never moves when the verdict gains or loses a line */
+  .verdict { flex: none; text-align: center; height: 74px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
   .verdict .lbl { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
   .verdict .nm { font-size: 26px; font-weight: 700; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; justify-content: center; }
   .verdict.idle .nm { color: var(--muted); font-size: 18px; font-weight: 500; }
@@ -225,7 +226,9 @@
     .bar-in { padding: 0 12px; gap: 8px; }
     .cupside { flex-direction: row; flex-wrap: wrap; gap: 6px 10px; padding: 10px; }
     .cupside .scene { transform: scale(.42); transform-origin: center; margin: -88px -76px; }
-    .verdict { flex: 1; min-height: 0; text-align: left; }
+    .verdict { flex: 1; height: 74px; text-align: left; }
+    .cupside { align-items: flex-start; }
+    .cupside .scene { align-self: center; }
     .verdict .nm { justify-content: flex-start; font-size: 21px; }
     .cupside .vols, .cupside .near { flex-basis: 100%; }
     .vols { max-width: none; gap: 1px; }
