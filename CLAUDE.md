@@ -38,3 +38,9 @@ The settings view warns that clearing site data resets them.
    390×844, 375×667, 360×740: no page scroll, no `.cv`/phase overflow, no cut tiles. Disable transitions in
    test frames (`*{transition:none!important}`) — headless virtual time freezes them and fakes bugs.
    Never bind a local test server inside 4710–4779 (reserved); 8743 has been used.
+
+## Lighthouse
+<!-- lighthouse-optimized: 2026-10-31 -->
+- Baseline (mobile): performance 84, accessibility 96, best-practices 100, SEO 100.
+- Fixed: pager dots (`.pager`, `.lpager`) now sit on a 24px pitch so each 9px dot has a clear 24px tap circle (dot size and pager height unchanged; fit-check passed at all 8 sizes); `sw.js` cache → v15.
+- Left: inline JS/CSS "minify" (no build step; single-file by design), GitHub Pages cache TTL (can't set headers), gtag/analytics/footer findings handled centrally.
